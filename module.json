@@ -20,6 +20,9 @@
       "entity": "Macro"
     }
   ],
-  "minimumCoreVersion": "0.5.5",
-  "compatibleCoreVersion": "0.5.7"
+  "url": "https://github.com/SvenWerlen/fvtt-data-toolbox",
+  "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/v-0.1.0.zip",
+  "manifest": "https://raw.githubusercontent.com/SvenWerlen/foundryvtt-pathfinder1-fr/master/module.json",
+  "minimumCoreVersion": "0.6.0",
+  "compatibleCoreVersion": "0.6.0"
 }
