@@ -29,6 +29,9 @@ To install the module, follow these instructions:
 * Click on `Generate compendium` button
 * Wait until process is completed (99 creatures)
 * Take a look at the newly created compendium "Toolbox Data"
+* Notice that creatures have been added to the compendium with their names and abilities
+
+See also: [doc/tutorials](doc/tutorials/README.md)
 
 ### How does it work?
 
