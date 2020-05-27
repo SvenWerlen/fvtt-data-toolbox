@@ -1,0 +1,26 @@
+{
+  "name": "{{Name}}",
+  "type": "npc",
+  "data": {
+    "abilities": {
+      "str": {
+        "value": {{Str}}
+      },
+      "dex": {
+        "value": {{Dex}}
+      },
+      "con": {
+        "value": {{Con}}
+      },
+      "int": {
+        "value": {{Int}}
+      },
+      "wis": {
+        "value": {{Wis}}
+      },
+      "cha": {
+        "value": {{Cha}}
+      }
+    }
+  }
+}

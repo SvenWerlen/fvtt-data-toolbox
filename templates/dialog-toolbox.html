@@ -1,0 +1,34 @@
+<form class="toolbox flexcol" autocomplete="off">
+  <div class="tab active" data-tab="image">
+    <p class="notes">{{localize "tb.toolboxNotes"}}</p>
+
+    <div class="form-group">
+      <label>{{localize "tb.sourceFile"}}</label>
+      <div class="form-fields">              
+        <button type="button" class="file-picker" data-type="text" data-target="source" title="{{localize "tb.browseFile"}}" tabindex="-1">
+          <i class="fas fa-file-import fa-fw"></i>
+        </button>
+        <input class="csv" type="text" name="source" placeholder="path/data.csv" value="{{source}}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "tb.templateFile"}}</label>
+      <div class="form-fields">              
+        <button type="button" class="file-picker" data-type="text" data-target="template" title="{{localize "tb.browseFile"}}" tabindex="-1">
+          <i class="fas fa-file-import fa-fw"></i>
+        </button>
+        <input class="json" type="text" name="template" placeholder="path/template.json" value="{{template}}">
+      </div>
+    </div>
+        
+    <div class="form-group">
+      <label>{{localize "tb.entityType"}}</label>
+      <select name="entity">
+          <option value="Actor">{{localize "tb.actor"}}</option>
+          <option value="Item">{{localize "tb.item"}}</option>
+      </select>
+    </div>
+    
+  </div>
+</form>

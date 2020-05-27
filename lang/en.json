@@ -1,0 +1,22 @@
+{
+    "ERROR.tbNoSource": "Please choose a source file!",
+    "ERROR.tbNoTemplate": "Please choose a template file!",
+    "ERROR.tbInvalidEntity": "Please choose a valid entity!",
+    "ERROR.tbInvalidCSV": "Cannot read source data file. Check that the file is correctly formated (CSV)!",
+    "ERROR.tbGenerationError": "Generation failed. Check console for more details!",
+    
+    "tb.generateCompendiumTitle": "Generate Compendium",
+    "tb.toolboxNotes": "Choose source data file and transformation (template)",
+    "tb.sourceFile": "Source file",
+    "tb.templateFile": "Template",
+    "tb.generate": "Generate compendium",
+    "tb.cancel": "Cancel",
+    "tb.browseFile": "Browse file",
+    "tb.entityType": "Entity type",
+    "tb.actor": "Actor",
+    "tb.item": "Item",
+    
+    "tb.processStarted": "Process started. Please wait ... it could take minutes!!",
+    "tb.inProcess": "{count}/{total}",
+    "tb.processCompleted": "{count} {type}s successfully imported!"
+}

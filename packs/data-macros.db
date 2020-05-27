@@ -1,0 +1,1 @@
+{"_id":"6dPmx5EELee0g2jS","name":"Show Toolbox","permission":{"default":0,"FgnRmbsZ0zuxNbBw":3},"type":"script","flags":{},"scope":"global","command":"dtShowToolbox();","author":"FgnRmbsZ0zuxNbBw","img":"modules/data-toolbox/icons/toolbox.png","actorIds":[]}
