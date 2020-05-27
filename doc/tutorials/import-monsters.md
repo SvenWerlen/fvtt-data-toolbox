@@ -51,7 +51,9 @@ consists in creating an Actor inside the application and retrieve it from the da
 
 * Create a new world `myworld` in Foundry VTT with the desired system
 * Create a new actor `myactor`
-* Open your file browser and navigate to the home installation of Foundry VTT (`$HOME/.local/share/FoundryVTT/` under Linux)
+* Open your file browser and navigate to the home installation of Foundry VTT
+  * `$HOME/.local/share/FoundryVTT/` for Linux
+  * `%localappdata%\FoundryVTT` for Windows
 * Navigate to the newly created world, where data is stored: `Data/worlds/myworld/data`
 * Open the file `actors.db` in your favorite Text editor
 * The last line contains the actor that you created. Copy the entire line which looks like this:
