@@ -4,6 +4,7 @@
     "ERROR.tbInvalidEntity": "Please choose a valid entity!",
     "ERROR.tbInvalidCSV": "Cannot read source data file. Check that the file is correctly formated (CSV)!",
     "ERROR.tbGenerationError": "Generation failed. Check console for more details!",
+    "ERROR.tbNumberMixedWithText": "Field '{field}' was detected as number but is mixed with text on row {row}! Check console!",
     
     "tb.generateCompendiumTitle": "Generate Compendium",
     "tb.toolboxNotes": "Choose source data file and transformation (template)",

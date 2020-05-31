@@ -76,7 +76,6 @@ class GenerateCompendiumDialog extends Dialog {
       let data;
       try {
         data = await d3.csv(source);
-        console.log(data)
       } catch(err) {
         ui.notifications.error(game.i18n.localize("ERROR.tbInvalidCSV"));
         throw new Error(err);
@@ -85,7 +84,33 @@ class GenerateCompendiumDialog extends Dialog {
       // load template (as text)
       const tmpl = await d3.text(template);
       //console.log(tmpl)
-        
+
+      // valide CSV based on template
+      let fields = new Set()
+      let matches = tmpl.matchAll(/\{\{([^\}]+)\}\}/g)
+      matches = Array.from(matches); 
+      matches.forEach( m => fields.add(m[1]));
+      let fieldIsNumber = {}
+      for (let f of fields.keys()) {
+        for (let i=0; i<data.length; i++) {
+          if (f in fieldIsNumber) {
+            // text mixed with numbers
+            if (fieldIsNumber[f] && isNaN(data[i][f])) {
+              ui.notifications.error(game.i18n.format("ERROR.tbNumberMixedWithText", {row: i+1, field: f}));
+              let field = Object.keys(data[i]).indexOf(f)
+              let f1Char = Math.floor(field / 26) == 0 ? "" : String.fromCharCode(65 + n)
+              let f2Char = String.fromCharCode(65 + (field % 26))
+              console.log(`Text found where Number should be: '${data[i][f]}' for field '${f}' (${f1Char}${f2Char}) on row ${i+2}`)
+              console.log("If column number doesn't match your file, it means that you have 2 columns with the same name (one got ignored)")
+              return;
+            }
+            // numbers but with text
+          } else if(data[i][f] != null && data[i][f].length > 0) {
+            fieldIsNumber[f] = !isNaN(data[i][f])
+          }
+        }
+      }
+      
       // delete compendium if exists
       let compendium = game.packs.get("world.toolbox-data");
       if (compendium) {
@@ -104,6 +129,13 @@ class GenerateCompendiumDialog extends Dialog {
           
           if (i % 50 == 0 && i != 0) {
             ui.notifications.info(game.i18n.format("tb.inProcess", {count: i, total: data.length}));
+          }
+          
+          // replace empty values with 0s
+          for (let f of fields.keys()) {
+            if (fieldIsNumber[f] && (data[i][f] == null || data[i][f].length == 0)) {
+              data[i][f] = 0;
+            }
           }
           
           jsonData = this.format(tmpl, data[i]);

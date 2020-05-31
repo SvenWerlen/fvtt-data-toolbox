@@ -54,3 +54,9 @@ It requires a template in JSON format with variables matching headers from the C
 ```
 
 See: [samples/creature-template.json](samples/creature-template.json)
+
+### Important to know
+
+* If you have two columns with the same name, the toolbox will only consider only the last one
+* Toolbox will detect if a column is of type text or number (based on the first value found).
+* If a number is mixed with text, the tool will warn you and the console will show you details
