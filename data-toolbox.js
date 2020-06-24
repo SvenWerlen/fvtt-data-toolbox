@@ -71,6 +71,7 @@ class GenerateCompendiumDialog extends Dialog {
     else {
       game.settings.set("data-toolbox", "source", source);
       game.settings.set("data-toolbox", "template", template);
+      game.settings.set("data-toolbox", "entity", entity);
       
       // load data (as CSV)
       let data;
@@ -91,8 +92,11 @@ class GenerateCompendiumDialog extends Dialog {
       matches = Array.from(matches); 
       matches.forEach( m => fields.add(m[1]));
       let fieldIsNumber = {}
-      for (let f of fields.keys()) {
-        for (let i=0; i<data.length; i++) {
+      let fieldDefault = {}
+      let hasSample = false
+      for (let i=0; i<data.length; i++) {
+        let sample = i > 0 ? false : data[0][fields.values().next().value] === "sample"
+        for (let f of fields.keys()) {
           if (f in fieldIsNumber) {
             // text mixed with numbers
             if (fieldIsNumber[f] && isNaN(data[i][f])) {
@@ -108,8 +112,14 @@ class GenerateCompendiumDialog extends Dialog {
           } else if(data[i][f] != null && data[i][f].length > 0) {
             fieldIsNumber[f] = !isNaN(data[i][f])
           }
+          if (sample) {
+            hasSample = true
+            fieldDefault[f] = isNaN(data[i][f]) ? data[i][f] : Number(data[i][f])
+          }
         }
       }
+      
+      const totalCount = hasSample ? data.length - 2 : data.length - 1
       
       // delete compendium if exists
       let compendium = game.packs.get("world.toolbox-data");
@@ -122,21 +132,33 @@ class GenerateCompendiumDialog extends Dialog {
       const pack = await game.packs.find(p => p.metadata.label === "Toolbox Data");
       if (!pack) { return; }
       
+      console.log(fieldDefault)
+      
       let jsonData = null;
       try {
         ui.notifications.info(game.i18n.localize("tb.processStarted"))
         for(let i=0; i<data.length; i++) {
           
-          if (i % 50 == 0 && i != 0) {
-            ui.notifications.info(game.i18n.format("tb.inProcess", {count: i, total: data.length}));
+          if (data[i].name === "sample" ) {
+            continue;
           }
           
-          // replace empty values with 0s
+          if (i % 250 == 0 && i != 0) {
+            ui.notifications.info(game.i18n.format("tb.inProcess", {count: i, total: totalCount}));
+          }
+          
+          // replace empty values with default value (or 0s)
           for (let f of fields.keys()) {
-            if (fieldIsNumber[f] && (data[i][f] == null || data[i][f].length == 0)) {
-              data[i][f] = 0;
+            if (data[i][f] == null || data[i][f].length == 0) {
+              if (f in fieldDefault) {
+                data[i][f] = fieldDefault[f];
+              }
+              else if (fieldIsNumber[f]) {
+                data[i][f] = 0;
+              }
             }
           }
+          //console.log(data[i])
           
           jsonData = this.format(tmpl, data[i]);
           //console.log(jsonData)
@@ -145,7 +167,7 @@ class GenerateCompendiumDialog extends Dialog {
           let entity = await pack.createEntity(newData);
           entity.update({}); // force update to auto-calculate other data (e.g. totals)
         }
-        ui.notifications.info(game.i18n.format("tb.processCompleted", {count: data.length, type: entity}));
+        ui.notifications.info(game.i18n.format("tb.processCompleted", {count: totalCount, type: entity}));
       } catch(err) {
         ui.notifications.error(game.i18n.localize("ERROR.tbGenerationError"));
         console.log("Data Toolbox | JSON: " + jsonData);
@@ -171,15 +193,22 @@ Hooks.once("init", () => {
   console.log("Data Toolbox | Init")
   loadTemplates(["modules/data-toolbox/templates/dialog-toolbox.html"]);
   
-  game.settings.register("data-toolbox", "source", { scope: "world", config: false, type: String });
-  game.settings.register("data-toolbox", "template", { scope: "world", config: false, type: String });
+  game.settings.register("data-toolbox", "source", { scope: "world", config: false, type: String, default: "modules/data-toolbox/samples/bestiary-sample.csv" });
+  game.settings.register("data-toolbox", "template", { scope: "world", config: false, type: String, default: "modules/data-toolbox/samples/creature-template.json" });
+  game.settings.register("data-toolbox", "entity", { scope: "world", config: false, type: String, default: "Actor" });
 });
 
 
 function dtShowToolbox() {
   console.log("Data Toolbox | Show");
   
-  renderTemplate("modules/data-toolbox/templates/dialog-toolbox.html", { source: game.settings.get("data-toolbox", "source"), template: game.settings.get("data-toolbox", "template")}).then(html => {
-    (new GenerateCompendiumDialog(null, {html: html})).render(true);
-  });
+  game.settings.get("data-toolbox", "source")
+  
+  renderTemplate("modules/data-toolbox/templates/dialog-toolbox.html", { 
+      source: game.settings.get("data-toolbox", "source"), 
+      template: game.settings.get("data-toolbox", "template"),
+      itemSelected: game.settings.get("data-toolbox", "entity") === "Item" ? "selected" : "",
+      actorSelected: game.settings.get("data-toolbox", "entity") === "Actor" ? "selected" : ""
+    }).then(html => { (new GenerateCompendiumDialog(null, {html: html})).render(true); }
+  );
 }

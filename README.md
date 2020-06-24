@@ -40,6 +40,7 @@ The utility reads the input file, line by line, and generates an entry into the 
 It requires data (*source file*) to be structured and stored using [CSV format](https://en.wikipedia.org/wiki/Comma-separated_values).
 * The data must be clean
 * The header (first record) must exist and provide column names
+* If the second record contains the word "sample" on the first column, all the other columns will be used to determine the default values
 
 See: [samples/bestiary-sample.csv](samples/bestiary-sample.csv)
 
@@ -60,3 +61,5 @@ See: [samples/creature-template.json](samples/creature-template.json)
 * If you have two columns with the same name, the toolbox will only consider only the last one
 * Toolbox will detect if a column is of type text or number (based on the first value found).
 * If a number is mixed with text, the tool will warn you and the console will show you details
+* If a sample line is provided, the toolbox will use the provided default value for empty fields
+* If a sample line is not provided, the toolbox will use `0` as default for numbers and `""` for strings
