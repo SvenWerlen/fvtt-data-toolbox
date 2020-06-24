@@ -2,7 +2,7 @@
   "name": "data-toolbox",
   "title": "Data Toolbox for FoundryVTT",
   "description": "Tools for generating/manipulating data (compendiums). For example, it can be used for generating a compendium from a CSV file.",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "author": "Sven Werlen",
   "scripts": ["data-toolbox.js", "scripts/d3/d3.min.js" ,"scripts/d3-fetch/d3-fetch.min.js"],
   "languages": [
@@ -21,7 +21,7 @@
     }
   ],
   "url": "https://github.com/SvenWerlen/fvtt-data-toolbox",
-  "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/archive/v-0.3.1.zip",
+  "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/archive/v-0.4.0.zip",
   "manifest": "https://raw.githubusercontent.com/SvenWerlen/fvtt-data-toolbox/master/module.json",
   "minimumCoreVersion": "0.6.0",
   "compatibleCoreVersion": "1.0.0"

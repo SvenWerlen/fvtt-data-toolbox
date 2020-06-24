@@ -1,0 +1,81 @@
+{
+	"name": "{{name}}",
+	"type": "{{type}}",
+	"data": {
+		"description": {
+			"value": "{{data/description/value}}",
+			"chat": "{{data/description/chat}}",
+			"unidentified": "{{data/description/unidentified}}"
+		},
+		"source": "{{data/source}}",
+		"activation": {
+			"type": "{{data/activation/type}}",
+			"cost": {{data/activation/cost}},
+			"condition": "{{data/activation/condition}}"
+		},
+		"duration": {
+			"value": "{{data/duration/value}}",
+			"units": {{data/duration/units}}
+		},
+		"target": {
+			"value": {{data/target/value}},
+			"units": "{{data/target/units}}",
+			"type": "{{data/target/type}}"
+		},
+		"range": {
+			"value": {{data/range/value}},
+			"long": {{data/range/long}},
+			"units": "{{data/range/units}}"
+		},
+		"uses": {
+			"value": {{data/uses/value}},
+			"max": {{data/uses/max}},
+			"per": "{{data/uses/per}}"
+		},
+		"consume": {
+			"type": "{{data/consume/type}}",
+			"target": "{{data/consume/target}}",
+			"amount": {{data/consume/amount}}
+		},
+		"ability": "{{data/ability}}",
+		"actionType": "{{data/actionType}}",
+		"attackBonus": {{data/attackBonus}},
+		"chatFlavor": "{{data/chatFlavor}}",
+		"critical": {{data/critical}},
+		"damage": {
+			"parts": [],
+			"versatile": "{{data/damage/versatile}}"
+		},
+		"formula": "{{data/formula}}",
+		"save": {
+			"ability": "{{data/save/ability}}",
+			"dc": {{data/save/dc}},
+			"scaling": "{{data/save/scaling}}"
+		},
+		"level": {{data/level}},
+		"school": "{{data/school}}",
+		"components": {
+			"value": "{{data/components/value}}",
+			"vocal": {{data/components/vocal}},
+			"somatic": {{data/components/somatic}},
+			"material": {{data/components/material}},
+			"ritual": {{data/components/ritual}},
+			"concentration": {{data/components/concentration}}
+		},
+		"materials": {
+			"value": "{{data/materials/value}}",
+			"consumed": {{data/materials/consumed}},
+			"cost": {{data/materials/cost}},
+			"supply": {{data/materials/supply}}
+		},
+		"preparation": {
+			"mode": "{{data/preparation/mode}}",
+			"prepared": {{data/preparation/prepared}}
+		},
+		"scaling": {
+			"mode": "{{data/scaling/mode}}",
+			"formula": "{{data/scaling/formula}}"
+		},
+		"img": "{{data/img}}"
+	}
+}

@@ -119,7 +119,7 @@ class GenerateCompendiumDialog extends Dialog {
         }
       }
       
-      const totalCount = hasSample ? data.length - 2 : data.length - 1
+      const totalCount = hasSample ? data.length - 1 : data.length
       
       // delete compendium if exists
       let compendium = game.packs.get("world.toolbox-data");
@@ -147,7 +147,7 @@ class GenerateCompendiumDialog extends Dialog {
             ui.notifications.info(game.i18n.format("tb.inProcess", {count: i, total: totalCount}));
           }
           
-          // replace empty values with default value (or 0s)
+          // replace empty values with default value (or 0s) and clean data
           for (let f of fields.keys()) {
             if (data[i][f] == null || data[i][f].length == 0) {
               if (f in fieldDefault) {
@@ -156,6 +156,9 @@ class GenerateCompendiumDialog extends Dialog {
               else if (fieldIsNumber[f]) {
                 data[i][f] = 0;
               }
+            }
+            else {
+              data[i][f] = data[i][f].replace(/\n/g, "\\n").replace(/\r/g, "") //JSON.stringify(data[i][f])
             }
           }
           //console.log(data[i])
