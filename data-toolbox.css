@@ -1,0 +1,106 @@
+.window-upload-handle {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 30px;
+  background: #444;
+  padding: 2px;
+  border: 1px solid #111;
+  left: 0;
+  border-radius: 0 4px 0 0;
+}
+
+.dtb.review ol.item-list li {
+  padding: 2px 0 2px 0;
+  background-color: rgba(155, 155, 155, 0.3);
+}
+
+.dtb.review ol.item-list li:nth-child(2n+1) {
+  background-color: rgba(210, 210, 210, 0.3);
+}
+
+.dtb.review ol.item-list .name {
+  padding-left: 5px;
+}
+
+.dtb.review ol.item-list .type, .dtb.review ol.item-list .system {
+  flex: 0 0 60px;
+  padding: 0 1px 0 1px;
+}
+
+.dtb.review ol.item-list .compendium {
+  flex: 0 0 120px;
+  padding: 0 1px 0 1px;
+}
+
+.dtb.review ol.item-list .controls {
+  flex: 0 0 60px;
+  padding: 0 1px 0 1px;
+}
+
+.dtb.review ol.item-list .controls a {
+  flex: 0 0 16px;
+  font-size: 10px;
+  text-align: center;
+  color: #666;
+  padding-left: 5px;
+}
+
+.dtb.compare pre.codeBlock.codeBlock span.code, div.codeBlock span.code {
+    min-width: 97%;
+    display: inline-block;
+}
+
+.dtb.compare pre.codeBlock .line-number, div.codeBlock .line-number {
+  margin:0 1em 0 -1em;
+  border-right:1px solid #eee;
+  color: #bbb;
+  text-align:right;
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+  
+  -o-user-select: none;
+  user-select: none;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+}
+
+.dtb.compare pre.codeBlock .line-number span, div.codeBlock .line-number span {
+  display:block;
+  padding:0 .5em 0 1em;
+}
+
+.dtb.compare pre.codeBlock .cl {
+  display:block;
+  clear:both;
+}
+
+.dtb.compare .codeBlock {
+  width: 45%;
+  overflow: scroll;
+  font-size: small;
+}
+
+.dtb.compare div.codeLine span.diff {
+    color: #c00;
+}
+
+.dtb.compare div.codeLine span.eq {
+    background: rgba(50, 57, 88, 0.1);
+    color: #333;
+}
+
+.dtb.compare div.codeLine span.type {
+    background: rgba(220, 100, 100, 0.1);
+}
+
+.dtb.compare div.codeLine span.missing {
+    background: rgba(0, 160, 80, 0.1);
+    color: green;
+}
+
+.dtb.compare div.codeLine span.selected {
+    background: #cef;
+    color: #47e;
+}

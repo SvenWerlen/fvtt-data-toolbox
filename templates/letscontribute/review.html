@@ -1,0 +1,58 @@
+<form autocomplete="off" onsubmit="event.preventDefault();">
+  <ol class="item-list">
+    <li class="item flexrow" data-entry="{{entry.id}}">
+      <div class="name">
+        <h4>Entrée</h4>
+      </div>
+      
+      <div class="type">
+        <h4>Type</h4>
+      </div>
+      
+      <div class="system">
+        <h4>Système</h4>
+      </div>
+      
+      <div class="compendium">
+        <h4>Compendium</h4>
+      </div>
+      
+      
+      <div class="controls">
+        <h4>Actions</h4>
+      </div>
+    </li>
+    {{#each entries as |entry|}}
+    <li class="item flexrow" data-entry="{{entry.id}}">
+      <div class="name">
+        {{entry.name}}
+      </div>
+      
+      <div class="type">
+        {{entry.type}}
+      </div>
+      
+      <div class="system">
+        {{entry.system}}
+      </div>
+      
+      <div class="compendium">
+        {{entry.compendium}}
+      </div>
+      
+      
+      <div class="controls">
+        <a class="control compare">
+          <i class="fas fa-not-equal"></i>
+        </a>
+        <a class="control import">
+          <i class="fas fa-download"></i>
+        </a>
+        <a class="control delete">
+          <i class="fas fa-trash"></i>
+        </a>
+      </div>
+    </li>
+    {{/each}}
+  </ol>
+</form>
