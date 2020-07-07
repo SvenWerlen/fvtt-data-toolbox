@@ -1,0 +1,67 @@
+{
+    "ERROR.tbNoSource": "Veuillez choisir un fichier de données!",
+    "ERROR.tbNoTemplate": "Veuillez choisir un template!",
+    "ERROR.tbInvalidEntity": "Veuillez choisir un type d'entité valide!",
+    "ERROR.tbInvalidCSV": "Incapable de lire le fichier de données. Veuillez vérifier que le fichier est bien au bon format (CSV)!",
+    "ERROR.tbGenerationError": "Génération a échoué. Consulter la console (F12) pour plus de détails!",
+    "ERROR.tbNumberMixedWithText": "Champs '{field}' a été détecté du type 'numérique' mais la valeur à la ligne {row} est mélangée avec du texte! Consulter la console (F12)!",
+    
+    "tb.generateCompendiumTitle": "Générer un compendium",
+    "tb.toolboxNotes": "Choisir les données (source) et le gabarit (template)",
+    "tb.sourceFile": "Fichier source",
+    "tb.templateFile": "Template",
+    "tb.generate": "Générer compendium",
+    "tb.cancel": "Annuler",
+    "tb.browseFile": "Parcourir",
+    "tb.entityType": "Type d'entité",
+    "tb.actor": "Actor",
+    "tb.item": "Item",
+    
+    "tb.processStarted": "Processus démarré. Veuillez attendre... peut prendre plusieurs minutes!!",
+    "tb.inProcess": "{count}/{total}",
+    "tb.processCompleted": "{count} {type}s importés avec succès!",
+    
+    "tblc.submitInfo": "Les données de l'élément seront envoyées sur un serveur en tant que contribution de manière à pouvoir être révisée et éventullement intégrée dans le compendium du système.",
+    "tblc.submitReadMore": "Voir documentation",
+    "tblc.item": "Élément",
+    "tblc.type": "Type",
+    "tblc.compendium": "Compendium",
+    "tblc.system": "Système",
+    "tblc.submitTitle": "Confirmation d'envoi de données",
+    "tblc.understandAndSubmit": "Je comprends (envoyer les données)",
+    
+    "tblc.reviewTitle": "Réviser les contributions",
+    "tblc.reviewInfo": "Si vous avez les privilèges nécessaires, vous pouvez réviser les contributions soumises ci-dessous (voir les différences, tester localement, marquer 'accepté' ou 'refusé' ou simplement supprimer).",
+    "tblc.actions": "Actions",
+    "tblc.actionAccept": "Marquer l'élément comme 'accepté'",
+    "tblc.actionReject": "Marquer l'élément comme 'rejeté'",
+    "tblc.actionCompare": "Comparer l'élément soumis avec l'original/la source du compendium",
+    "tblc.actionImport": "Importer l'élément pour tester",
+    "tblc.actionDelete": "Supprimer la contribution",
+    
+    "tblc.msgSearchingInCompendium": "Recherche de l'élément correspondant dans les compendiums... veuillez patienter!!",
+    "tblc.msgSubmitSuccess": "{entryName} a été envoyé avec succès!",
+    "tblc.msgSubmitError": "{entryName} n'a pas pu être envoyé ({code})!",
+    "tblc.msgImportSuccess": "{entryName} a été importé avec succès!",
+    
+    "tblc.acceptTitle": "Accepter la contribution",
+    "tblc.acceptContent": "Êtes-vous sûr(e) de vouloir marquer <i>{name}</i> comme <b>accepté</b>? L'entrée disparaîtra de la liste.",
+    "tblc.rejectTitle": "Rejeter la contribution",
+    "tblc.rejectContent": "Êtes-vous sûr(e) de vouloir marquer <i>{name}</i> comme <b>refusé</b>? L'entrée disparaîtra de la liste.",
+    "tblc.deleteTitle": "Supprimer la contribution",
+    "tblc.deleteContent": "Êtes-vous sûr(e) de vouloir supprimer <i>{name}</i>? Les données seront perdues!",
+    
+    
+    "ERROR.tlbcNoMatch": "Aucune entrée correspondante trouvée dans les compendiums!",
+    "ERROR.tlbcNoRights": "Vous ne disposez pas des droits suffisants pour réviser les contributions.",
+    "ERROR.tlbcServerUnreachable": "Serveur non-disponible",
+    "ERROR.tlbcUnexpectedResponse": "Réponse inattendue du serveur (voir F12)!",
+    
+    "tblc.compareTitle": "Comparer la contribution avec l'original",
+    "tblc.compareInfo": "Comparer l'entrée soumise (à gauche) avec la source du compendium (à droite).",
+    
+    
+    "tblc.END": ""
+    
+    
+}
