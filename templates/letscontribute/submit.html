@@ -1,19 +1,18 @@
 <form>
   <p><em>
-    Exécutez cette action lorsque vous avez effectué des changements (ex: notes de contexte) et
-    que vous désirez les partager avec la communauté. L'ensemble des données de l'élément sera
-    envoyé sur un serveur. Consultez <a href="..." parent="_blank">l'aide</a> pour plus de détails.
+    {{localize "tblc.submitInfo"}}
+    <a href="https://github.com/SvenWerlen/fvtt-data-toolbox/letscontribute">{{localize "tblc.submitReadMore"}}</a>.
   </em></p>
   <div class="form-group">
-    <label><b>Élément:</b></label>
+    <label><b>{{localize "tblc.item"}}:</b></label>
     <label>{{entity.name}}</label>
   </div>
   <div class="form-group">
-    <label><b>Compendium d'origine:</b></label>
+    <label><b>{{localize "tblc.compendium"}}:</b></label>
     <label>{{compendium.metadata.label}} <em>({{compendium.collection}})</em></label>
   </div>
   <div class="form-group">
-    <label><b>Système:</b></label>
+    <label><b>{{localize "tblc.system"}}:</b></label>
     <label>{{system.data.title}} <em>({{system.id}})</em></label>
   </div>
 </form>

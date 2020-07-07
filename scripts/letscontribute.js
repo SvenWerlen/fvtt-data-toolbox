@@ -1,12 +1,63 @@
 
+/**
+ * Client functions for communicating with server
+ */
+class LetsContributeClient {
+  
+  static SERVER_URL = "http://127.0.0.1:5000"
+  //static SERVER_URL = "https://boisdechet.org/fvtt"
+  static HEADERS = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+  
+  token = null
+  
+  /*
+   * Sends a request to server and return the response or null (if server unreachable)
+   */
+  async send(URI, method, data) {
+    let params = {
+      method: method,
+      headers: LetsContributeClient.HEADERS
+    }
+    if( this.token ) { params.headers.Authorization = `Bearer ${this.token}`}
+    if( data ) { params.body = JSON.stringify(data) }
+
+    const response = await fetch(`${LetsContributeClient.SERVER_URL}${URI}`, params).catch(function(e) {
+      console.log(`LetsContribute | Cannot establish connection to server ${LetsContributeClient.SERVER_URL}`, e)
+    });
+    if(!response) {
+      return null;
+    }
+    return { 'status': response.status, 'data': await response.json() }
+  }
+  
+  async get(URI) { return this.send(URI, "GET") }
+  async post(URI, data) { return this.send(URI, "POST", data) }
+  async delete(URI, data) { return this.send(URI, "DELETE") }
+  
+  /*
+   * User login
+   */
+  async login() {
+    let data = {
+      login: "Sven",
+      secret: "test"
+    }
+    const response = await this.post('/login', data)
+    if( !response || response.status == 401 ) {
+      return false
+    }
+    
+    this.token = response.data.access_token
+    return true
+  }
+    
+}
 
 
 /**
  * Add an icon on each item...
  */
 class LetsContribute {
-
-  static SERVER_URL = "http://127.0.0.1:5000"
   
   constructor(hook, type, query) {
     Hooks.on(hook, this.handle.bind(this));
@@ -30,11 +81,11 @@ class LetsContribute {
       evt.stopPropagation();
       
       // retrieve pack entry matching name (there is not referenced ID?)
-      ui.notifications.info(`Recherche de l'entrée... veuillez patienter!`)
+      ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
       let match = await LetsContribute.getSearchEntryFromName(data.entity.name)
       
       if(!match) {
-        ui.notifications.error(`Aucune entrée n'a été trouvée dans les compendium!`)
+        ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
         return
       }
         
@@ -44,31 +95,25 @@ class LetsContribute {
           system: game.system
       }).then(dlg => {
         new Dialog({
-          title: "Contribuer",
+          title: game.i18n.localize("tblc.submitTitle"),
           content: dlg,
           buttons: {
             submit: {
-              label: "Soumettre", 
+              label: game.i18n.localize("tblc.understandAndSubmit"), 
               callback: async function(html) {
                 data = {
                   compendium: match.compendium.collection,
                   system: game.system.id,
                   entity: data.entity
                 }
-                const response = await fetch(`${LetsContribute.SERVER_URL}/item`, {
-                  method: 'POST',
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(data)
-                }).catch(function() {
-                  ui.notifications.error(`${data.entity.name} n'a pas pu être soumis (connexion avec le serveur a échoué)!`)
-                });
-                if (response.status == 200) {
-                  ui.notifications.info(`${data.entity.name} a été soumis avec succès!`)
+                let client = new LetsContributeClient()
+                const response = await client.post('/item', data)
+                if (response && response.status == 200) {                  
+                  ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: data.entity.name}));
                 } else {
-                  ui.notifications.error(`${data.entity.name} n'a pas pu être soumis (${response.status})!`)
+                  console.log("Error during submit: ", response ? response : "server unreachable")
+                  let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
+                  ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: data.entity.name, code: code}));
                 }
               }
             }
@@ -121,8 +166,7 @@ class LetsContribute {
   };
   
   static async showReviewerUI() {
-    const entries = await fetch(`${LetsContribute.SERVER_URL}/items`).then(r => r.json()) 
-    new LetsContributeReview(entries).render(true)
+    new LetsContributeReview().render(true)
   }
 };
 
@@ -133,19 +177,25 @@ class LetsContributeReview extends FormApplication {
     return mergeObject(super.defaultOptions, {
       id: "letscontributereview",
       classes: ["dtb", "review"],
-      title: "Review",
+      title: game.i18n.localize("tblc.reviewTitle"),
       template: "modules/data-toolbox/templates/letscontribute/review.html",
-      width: 600,
+      width: 700,
       height: "auto",
       closeOnSubmit: false,
       submitOnClose: false,
     });
   }
   
-  getData() {
-    return {
-      entries: this.object,
-    };
+  async getData() {
+    let client = new LetsContributeClient()
+    if( ! await client.login() ) {
+      return { error: game.i18n.localize("ERROR.tlbcNoRights") }
+    }
+    const response = await client.get('/items')
+    if( response && response.status == 200 ) {
+      return { entries: response.data };
+    }
+    return { error: game.i18n.localize("ERROR.tlbcServerUnreachable") }
   }
 
   activateListeners(html) {
@@ -157,24 +207,90 @@ class LetsContributeReview extends FormApplication {
     event.preventDefault();
     const a = event.currentTarget;
     const entryId = a.closest(".item").dataset.entry;
+    const entryName = a.closest(".item").dataset.name;
+    const window = this
+    
+    // authentification required!
+    let client = new LetsContributeClient()
+    if(! await client.login()) {
+      return;
+    }
     
     if (a.classList.contains("compare")) {
-      let data = await fetch(`${LetsContribute.SERVER_URL}/item/${entryId}`).then(r => r.json())
-      ui.notifications.info(`Recherche de l'entrée... veuillez patienter!`)
-      let match = await LetsContribute.getSearchEntryFromName(data.name)
-      if( !match ) {
-        ui.notifications.error(`Référence non-trouvée dans vos compendiums!`)
+      let response = await client.get(`/item/${entryId}`)
+      if( response.status == 200 ) {
+        ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
+        let data = response.data
+        let match = await LetsContribute.getSearchEntryFromName(data.name)
+        if( !match ) {
+          ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
+          return
+        }
+        const source = await match.compendium.getEntity(match.entity._id)
+        new LetsContributeCompare({ entry: data.data, source: source.data.data}).render(true)
+      } else {
+        console.log("Data Toolbox | Unexpected response", response)
+        ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
       }
-      const source = await match.compendium.getEntity(match.entity._id)
-      new LetsContributeCompare({ entry: data.data, source: source.data.data}).render(true)
     }
     else if (a.classList.contains("import")) {
-      console.log("here2")
+      let response = await client.get(`/item/${entryId}`)
+      if( response.status == 200 ) {
+        Item.create(response.data)
+        ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: data.entity.name}));
+      } else {
+        console.log("Data Toolbox | Unexpected response", response)
+        ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+      }
     }
     else if (a.classList.contains("delete")) {
-      console.log("here3")
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.deleteTitle"),
+        content: game.i18n.format("tblc.deleteContent", { name: entryName}),
+        yes: async function() {
+          let response = await client.delete(`/item/${entryId}`)
+          if( response && response.status == 200 ) {
+            window.render()
+          } else {
+            console.log("Data Toolbox | Unexpected response", response)
+            ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+          }
+        },
+        no: () => {}
+      });
     }
-    //this.render();
+    else if (a.classList.contains("accept")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.acceptTitle"),
+        content: game.i18n.format("tblc.acceptContent", { name: entryName}),
+        yes: async function() {
+          let response = await client.get(`/item/${entryId}/accept`)
+          if( response && response.status == 200 ) {
+            window.render()
+          } else {
+            console.log("Data Toolbox | Unexpected response", response)
+            ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+          }
+        },
+        no: () => {}
+      });
+    }
+    else if (a.classList.contains("reject")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.rejectTitle"),
+        content: game.i18n.format("tblc.rejectContent", { name: entryName}),
+        yes: async function() {
+          let response = await client.get(`/item/${entryId}/reject`)
+          if( response && response.status == 200 ) {
+            window.render()
+          } else {
+            console.log("Data Toolbox | Unexpected response", response)
+            ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+          }
+        },
+        no: () => {}
+      });
+    }
   }
 }
 
@@ -185,9 +301,9 @@ class LetsContributeCompare extends FormApplication {
     return mergeObject(super.defaultOptions, {
       id: "letscontributecompare",
       classes: ["dtb", "compare"],
-      title: "Review",
+      title: game.i18n.localize("tblc.compareTitle"),
       template: "modules/data-toolbox/templates/letscontribute/compare.html",
-      width: 1000,
+      width: window.screen.availWidth > 1200 ? 1200 : window.screen.availWidth,
       height: "auto",
       closeOnSubmit: false,
       submitOnClose: false,
@@ -200,8 +316,6 @@ class LetsContributeCompare extends FormApplication {
     super.activateListeners(html);
     let left = this.object.entry
     let right = this.object.source
-    console.log(JSON.stringify(left))
-    console.log(JSON.stringify(right))
     let pre = jdd.compare(
       left, 
       right
@@ -211,8 +325,6 @@ class LetsContributeCompare extends FormApplication {
   }
 
 }
-
-
 
 Hooks.once('ready', () => {
   LetsContribute.getSheets(CONFIG.Item).forEach(sheetClass => new LetsContribute(`render${sheetClass}`, 'Item'));

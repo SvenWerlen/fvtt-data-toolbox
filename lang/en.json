@@ -19,5 +19,49 @@
     
     "tb.processStarted": "Process started. Please wait ... it could take minutes!!",
     "tb.inProcess": "{count}/{total}",
-    "tb.processCompleted": "{count} {type}s successfully imported!"
+    "tb.processCompleted": "{count} {type}s successfully imported!",
+    
+    "tblc.submitInfo": "The item data will be sent to a server as contribution such it can be reviewed and eventually merged into the compendium.",
+    "tblc.submitReadMore": "See documentation",
+    "tblc.item": "Item",
+    "tblc.type": "Type",
+    "tblc.compendium": "Compendium",
+    "tblc.system": "System",
+    "tblc.submitTitle": "Data submit confirmation",
+    "tblc.understandAndSubmit": "I understand (submit the data)",
+    
+    "tblc.reviewTitle": "Review contributions",
+    "tblc.reviewInfo": "If you have the necessary rights, you can review the submitted entries below (view the differences, test it locally, mark it as 'accepted' or 'rejected', or simply delete).",
+    "tblc.actions": "Actions",
+    "tblc.actionAccept": "Mark it as 'accepted'",
+    "tblc.actionReject": "Mark it as 'rejected'",
+    "tblc.actionCompare": "Compare the submited item with the original from compendium",
+    "tblc.actionImport": "Import the submited item for testing",
+    "tblc.actionDelete": "Delete the item",
+    
+    "tblc.msgSearchingInCompendium": "Searching item match in compendium... please wait!!",
+    "tblc.msgSubmitSuccess": "{entryName} has been successfully sent!",
+    "tblc.msgSubmitError": "{entryName} couldn't be sent ({code})!",
+    "tblc.msgImportSuccess": "{entryName} has been successfully imported!",
+    
+    "tblc.acceptTitle": "Accept contribution",
+    "tblc.acceptContent": "Are you sure you want to mark <i>{name}</i> as <b>accepted</b>? The entry will disappear from the list.",
+    "tblc.rejectTitle": "Reject contribution",
+    "tblc.rejectContent": "Are you sure you want to mark <i>{name}</i> as <b>rejected</b>? The entry will disappear from the list.",
+    "tblc.deleteTitle": "Delete contribution",
+    "tblc.deleteContent": "Are you sure you want to delete <i>{name}</i>? Data will be lost!",
+    
+    
+    "ERROR.tlbcNoMatch": "No matching entry in compendium found!",
+    "ERROR.tlbcNoRights": "You don't enough privileges for reviewing contributions.",
+    "ERROR.tlbcServerUnreachable": "Server unreachable",
+    "ERROR.tlbcUnexpectedResponse": "Unexpected response from server (see F12)!",
+    
+    "tblc.compareTitle": "Compare contribution with source from compendium",
+    "tblc.compareInfo": "Compare the changes between the submitted entry (left) and the source from the compendium (right).",
+    
+    
+    "NON": ""
+    
+    
 }

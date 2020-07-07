@@ -1,29 +1,37 @@
 <form autocomplete="off" onsubmit="event.preventDefault();">
+  <p><em>
+    {{localize "tblc.reviewInfo"}}
+    <a href="https://github.com/SvenWerlen/fvtt-data-toolbox/letscontribute">{{localize "tblc.submitReadMore"}}</a>.
+  </em></p>
+  {{#if error}}
+  <div class="error">{{error}}</div>
+  {{/if}}
+  {{#unless error}}
   <ol class="item-list">
-    <li class="item flexrow" data-entry="{{entry.id}}">
+    <li class="item flexrow">
       <div class="name">
-        <h4>Entrée</h4>
+        <h4>{{localize "tblc.item"}}</h4>
       </div>
       
       <div class="type">
-        <h4>Type</h4>
+        <h4>{{localize "tblc.type"}}</h4>
       </div>
       
       <div class="system">
-        <h4>Système</h4>
+        <h4>{{localize "tblc.system"}}</h4>
       </div>
       
       <div class="compendium">
-        <h4>Compendium</h4>
+        <h4>{{localize "tblc.compendium"}}</h4>
       </div>
       
       
       <div class="controls">
-        <h4>Actions</h4>
+        <h4>{{localize "tblc.actions"}}</h4>
       </div>
     </li>
     {{#each entries as |entry|}}
-    <li class="item flexrow" data-entry="{{entry.id}}">
+    <li class="item flexrow" data-entry="{{entry.id}}" data-name="{{entry.name}}">
       <div class="name">
         {{entry.name}}
       </div>
@@ -42,17 +50,24 @@
       
       
       <div class="controls">
-        <a class="control compare">
+        <a class="control compare" title="{{localize "tblc.actionCompare"}}">
           <i class="fas fa-not-equal"></i>
         </a>
-        <a class="control import">
+        <a class="control import" title="{{localize "tblc.actionImport"}}">
           <i class="fas fa-download"></i>
         </a>
-        <a class="control delete">
+        <a class="control accept" title="{{localize "tblc.actionAccept"}}">
+          <i class="fas fa-thumbs-up"></i>
+        </a>
+        <a class="control reject" title="{{localize "tblc.actionReject"}}">
+          <i class="fas fa-thumbs-down"></i>
+        </a>
+        <a class="control delete" title="{{localize "tblc.actionDelete"}}">
           <i class="fas fa-trash"></i>
         </a>
       </div>
     </li>
     {{/each}}
   </ol>
+  {{/unless}}
 </form>
