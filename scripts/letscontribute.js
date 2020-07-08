@@ -4,8 +4,8 @@
  */
 class LetsContributeClient {
   
-  static SERVER_URL = "http://127.0.0.1:5000"
-  //static SERVER_URL = "https://boisdechet.org/fvtt"
+  //static SERVER_URL = "http://127.0.0.1:5000"
+  static SERVER_URL = "https://boisdechet.org/fvtt"
   static HEADERS = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
   
   token = null
@@ -38,9 +38,14 @@ class LetsContributeClient {
    * User login
    */
   async login() {
+    const login = game.settings.get("data-toolbox", "lcLogin")
+    const accessKey = game.settings.get("data-toolbox", "lcAccessKey")
+    if( !login || !accessKey ) {
+      return false
+    }
     let data = {
-      login: "Sven",
-      secret: "test"
+      login: login,
+      secret: accessKey
     }
     const response = await this.post('/login', data)
     if( !response || response.status == 401 ) {
@@ -187,6 +192,13 @@ class LetsContributeReview extends FormApplication {
   }
   
   async getData() {
+    if (!game.user.isGM) {
+      return { error: game.i18n.localize("ERROR.tlbcGMOnly") }
+    }
+    if (!game.settings.get("data-toolbox", "lcLogin") || !game.settings.get("data-toolbox", "lcAccessKey")) {
+      return { error: game.i18n.localize("ERROR.tlbcConfigurationMissing") }
+    }
+    
     let client = new LetsContributeClient()
     if( ! await client.login() ) {
       return { error: game.i18n.localize("ERROR.tlbcNoRights") }
@@ -236,8 +248,11 @@ class LetsContributeReview extends FormApplication {
     else if (a.classList.contains("import")) {
       let response = await client.get(`/item/${entryId}`)
       if( response.status == 200 ) {
-        Item.create(response.data)
-        ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: data.entity.name}));
+        if( response.data._id ) { delete response.data._id; }
+        console.log(response.data)
+        response.data.name = "Test"
+        await Item.create(response.data)
+        ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: response.data.name}));
       } else {
         console.log("Data Toolbox | Unexpected response", response)
         ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))

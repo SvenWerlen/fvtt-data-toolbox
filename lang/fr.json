@@ -51,9 +51,15 @@
     "tblc.deleteTitle": "Supprimer la contribution",
     "tblc.deleteContent": "Êtes-vous sûr(e) de vouloir supprimer <i>{name}</i>? Les données seront perdues!",
     
+    "SETTINGS.tblcLogin": "(Let's contribute) Nom d'utilisateur",
+    "SETTINGS.tblcLoginHint": "Si vous êtes réviseur, veuillez spécifier le 'login' utilisé pour s'authentifier sur le serveur Let's contribute (Voir documentation du projet pour plus d'information).",
+    "SETTINGS.tblcAccessKey": "(Let's contribute) Clé d'accès",
+    "SETTINGS.tblcAccessKeyHint": "Si vous êtes réviseur, veuillez spécifier la clé d'accès (secret) utilisée en combinaison avec le 'login' ci-dessus. IMPORTANT: il ne s'agit PAS de la clé d'accès de Foundry VTT!!",
     
     "ERROR.tlbcNoMatch": "Aucune entrée correspondante trouvée dans les compendiums!",
     "ERROR.tlbcNoRights": "Vous ne disposez pas des droits suffisants pour réviser les contributions.",
+    "ERROR.tlbcGMOnly": "Cette interface est uniquement disponible aux MJs.",
+    "ERROR.tlbcConfigurationMissing": "Vous devez configurer l'authentification pour Let's contribute (configuration du module).",
     "ERROR.tlbcServerUnreachable": "Serveur non-disponible",
     "ERROR.tlbcUnexpectedResponse": "Réponse inattendue du serveur (voir F12)!",
     

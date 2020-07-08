@@ -51,9 +51,15 @@
     "tblc.deleteTitle": "Delete contribution",
     "tblc.deleteContent": "Are you sure you want to delete <i>{name}</i>? Data will be lost!",
     
+    "SETTINGS.tblcLogin": "(Let's contribute) Screenname",
+    "SETTINGS.tblcLoginHint": "If you are a reviewer, specify the screenname used for authentication on Let's contribute server (See project documentation for more information).",
+    "SETTINGS.tblcAccessKey": "(Let's contribute) Access key",
+    "SETTINGS.tblcAccessKeyHint": "If you are a reviewer, specify the access key (secret) used in combination with the above screenname. IMPORTANT: this is NOT the secret of Foundry VTT!!",
     
     "ERROR.tlbcNoMatch": "No matching entry in compendium found!",
     "ERROR.tlbcNoRights": "You don't enough privileges for reviewing contributions.",
+    "ERROR.tlbcGMOnly": "This interface is only for GMs.",
+    "ERROR.tlbcConfigurationMissing": "You need to configure Let's contribute authentication details (module configuration).",
     "ERROR.tlbcServerUnreachable": "Server unreachable",
     "ERROR.tlbcUnexpectedResponse": "Unexpected response from server (see F12)!",
     
