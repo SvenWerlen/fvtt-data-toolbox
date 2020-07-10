@@ -31,6 +31,7 @@ class LetsContributeClient {
   }
   
   async get(URI) { return this.send(URI, "GET") }
+  async put(URI) { return this.send(URI, "PUT") }
   async post(URI, data) { return this.send(URI, "POST", data) }
   async delete(URI, data) { return this.send(URI, "DELETE") }
   
@@ -279,7 +280,7 @@ class LetsContributeReview extends FormApplication {
         title: game.i18n.localize("tblc.acceptTitle"),
         content: game.i18n.format("tblc.acceptContent", { name: entryName}),
         yes: async function() {
-          let response = await client.get(`/item/${entryId}/accept`)
+          let response = await client.put(`/item/${entryId}/accept`)
           if( response && response.status == 200 ) {
             window.render()
           } else {
@@ -295,7 +296,7 @@ class LetsContributeReview extends FormApplication {
         title: game.i18n.localize("tblc.rejectTitle"),
         content: game.i18n.format("tblc.rejectContent", { name: entryName}),
         yes: async function() {
-          let response = await client.get(`/item/${entryId}/reject`)
+          let response = await client.put(`/item/${entryId}/reject`)
           if( response && response.status == 200 ) {
             window.render()
           } else {
