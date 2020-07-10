@@ -86,17 +86,19 @@ class LetsContribute {
     img.addEventListener('click', async evt => {
       evt.stopPropagation();
       
+      const entity = app.entity.data
+      
       // retrieve pack entry matching name (there is not referenced ID?)
       ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
-      let match = await LetsContribute.getSearchEntryFromName(data.entity.name)
+      let match = await LetsContribute.getSearchEntryFromName(entity.name)
       
       if(!match) {
         ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
         return
       }
-        
+      
       renderTemplate("modules/data-toolbox/templates/letscontribute/submit.html", { 
-          entity: data.entity, 
+          entity: entity, 
           compendium: match.compendium, 
           system: game.system
       }).then(dlg => {
@@ -110,16 +112,16 @@ class LetsContribute {
                 data = {
                   compendium: match.compendium.collection,
                   system: game.system.id,
-                  entity: data.entity
+                  entity: entity
                 }
                 let client = new LetsContributeClient()
                 const response = await client.post('/item', data)
                 if (response && response.status == 200) {                  
-                  ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: data.entity.name}));
+                  ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: entity.name}));
                 } else {
                   console.log("Error during submit: ", response ? response : "server unreachable")
                   let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
-                  ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: data.entity.name, code: code}));
+                  ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: entity.name, code: code}));
                 }
               }
             }
