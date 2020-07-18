@@ -65,6 +65,8 @@ class LetsContributeClient {
  */
 class LetsContribute {
   
+  static lastSelectedInitiative = 0
+  
   constructor(hook, type, query) {
     Hooks.on(hook, this.handle.bind(this));
     this.type = type;
@@ -157,7 +159,7 @@ class LetsContributeSubmit extends FormApplication {
   constructor(data) {
     super()
     this.data = data;
-    this.data.selInitiative = 0;
+    this.data.selInitiative = LetsContribute.lastSelectedInitiative;
   }
   
   static get defaultOptions() {
@@ -216,8 +218,8 @@ class LetsContributeSubmit extends FormApplication {
       }
       if(this.data.selInitiative > 0) {
         data.initiative = Number(this.data.selInitiative)
+        LetsContribute.lastSelectedInitiative = data.initiative
       }
-      console.log(data)
       let client = new LetsContributeClient()
       const response = await client.post('/item', data)
       if (response && response.status == 200) {                  
