@@ -252,8 +252,6 @@ class LetsContributeReview extends FormApplication {
       let response = await client.get(`/item/${entryId}`)
       if( response.status == 200 ) {
         if( response.data._id ) { delete response.data._id; }
-        console.log(response.data)
-        response.data.name = "Test"
         await Item.create(response.data)
         ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: response.data.name}));
       } else {
