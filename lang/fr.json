@@ -26,9 +26,13 @@
     "tblc.item": "Élément",
     "tblc.type": "Type",
     "tblc.compendium": "Compendium",
+    "tblc.initiative": "Initiative",
     "tblc.system": "Système",
     "tblc.submitTitle": "Confirmation d'envoi de données",
     "tblc.understandAndSubmit": "Je comprends (envoyer les données)",
+    
+    "tblc.noInitiative": "Aucune initiative",
+    "tblc.noInitiativeDescription": "Si vous soumettez une contribution sans spécifier une initiative, celle-ci pourrait être rejetée!",
     
     "tblc.reviewTitle": "Réviser les contributions",
     "tblc.reviewInfo": "Si vous avez les privilèges nécessaires, vous pouvez réviser les contributions soumises ci-dessous (voir les différences, tester localement, marquer 'accepté' ou 'refusé' ou simplement supprimer).",
@@ -43,6 +47,7 @@
     "tblc.msgSubmitSuccess": "{entryName} a été envoyé avec succès!",
     "tblc.msgSubmitError": "{entryName} n'a pas pu être envoyé ({code})!",
     "tblc.msgImportSuccess": "{entryName} a été importé avec succès!",
+    "tblc.msgInitiativesError": "Initiatives n'ont pas pu être récupérées ({code})!",
     
     "tblc.acceptTitle": "Accepter la contribution",
     "tblc.acceptContent": "Êtes-vous sûr(e) de vouloir marquer <i>{name}</i> comme <b>accepté</b>? L'entrée disparaîtra de la liste.",

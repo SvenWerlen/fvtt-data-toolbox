@@ -14,6 +14,18 @@
   color: red;
 }
 
+.dtb.submit .description {
+  font-size: smaller;
+  font-style: italic;
+  line-height: normal;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.dtb.submit .description.warning {
+  color: red;
+}
+
 .dtb.review ol.item-list li {
   padding: 2px 0 2px 0;
   background-color: rgba(155, 155, 155, 0.3);
@@ -32,8 +44,8 @@
   padding: 0 1px 0 1px;
 }
 
-.dtb.review ol.item-list .compendium {
-  flex: 0 0 120px;
+.dtb.review ol.item-list .compendium, .dtb.review ol.item-list .initiative {
+  flex: 0 0 200px;
   padding: 0 1px 0 1px;
 }
 

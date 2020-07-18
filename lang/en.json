@@ -26,9 +26,13 @@
     "tblc.item": "Item",
     "tblc.type": "Type",
     "tblc.compendium": "Compendium",
+    "tblc.initiative": "Initiative",
     "tblc.system": "System",
     "tblc.submitTitle": "Data submit confirmation",
     "tblc.understandAndSubmit": "I understand (submit the data)",
+    
+    "tblc.noInitiative": "No initiative",
+    "tblc.noInitiativeDescription": "If you submit without specifying an initiative, your contribution could be rejected!",
     
     "tblc.reviewTitle": "Review contributions",
     "tblc.reviewInfo": "If you have the necessary rights, you can review the submitted entries below (view the differences, test it locally, mark it as 'accepted' or 'rejected', or simply delete).",
@@ -43,6 +47,7 @@
     "tblc.msgSubmitSuccess": "{entryName} has been successfully sent!",
     "tblc.msgSubmitError": "{entryName} couldn't be sent ({code})!",
     "tblc.msgImportSuccess": "{entryName} has been successfully imported!",
+    "tblc.msgInitiativesError": "Couldn't retrieve initiatives ({code})!",
     
     "tblc.acceptTitle": "Accept contribution",
     "tblc.acceptContent": "Are you sure you want to mark <i>{name}</i> as <b>accepted</b>? The entry will disappear from the list.",

@@ -97,37 +97,41 @@ class LetsContribute {
         return
       }
       
-      renderTemplate("modules/data-toolbox/templates/letscontribute/submit.html", { 
-          entity: entity, 
-          compendium: match.compendium, 
-          system: game.system
-      }).then(dlg => {
-        new Dialog({
-          title: game.i18n.localize("tblc.submitTitle"),
-          content: dlg,
-          buttons: {
-            submit: {
-              label: game.i18n.localize("tblc.understandAndSubmit"), 
-              callback: async function(html) {
-                data = {
-                  compendium: match.compendium.collection,
-                  system: game.system.id,
-                  entity: entity
-                }
-                let client = new LetsContributeClient()
-                const response = await client.post('/item', data)
-                if (response && response.status == 200) {                  
-                  ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: entity.name}));
-                } else {
-                  console.log("Error during submit: ", response ? response : "server unreachable")
-                  let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
-                  ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: entity.name, code: code}));
-                }
-              }
-            }
-          }
-        }, { width: 600 }).render(true);
-      });
+      new LetsContributeSubmit({ entity: entity, compendium: match.compendium, system: game.system }).render(true);
+//       renderTemplate("modules/data-toolbox/templates/letscontribute/submit.html", { 
+//           entity: entity, 
+//           compendium: match.compendium, 
+//           system: game.system,
+//           initiatives: response.data
+//       }).then(dlg => {
+//         new Dialog({
+//           title: game.i18n.localize("tblc.submitTitle"),
+//           content: dlg,
+//           buttons: {
+//             submit: {
+//               label: game.i18n.localize("tblc.understandAndSubmit"), 
+//               callback: async function(html) {
+//                 console.log(html)
+//                 return
+//                 data = {
+//                   compendium: match.compendium.collection,
+//                   system: game.system.id,
+//                   entity: entity
+//                 }
+//                 let client = new LetsContributeClient()
+//                 const response = await client.post('/item', data)
+//                 if (response && response.status == 200) {                  
+//                   ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: entity.name}));
+//                 } else {
+//                   console.log("Error during submit: ", response ? response : "server unreachable")
+//                   let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
+//                   ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: entity.name, code: code}));
+//                 }
+//               }
+//             }
+//           }
+//         }, { width: 600 }).render(true);
+//       });
     }, false);
   }
   
@@ -178,7 +182,98 @@ class LetsContribute {
   }
 };
 
+/*************************
+ * SUBMIT  
+ *************************/
+class LetsContributeSubmit extends FormApplication {
+  
+  constructor(data) {
+    super()
+    this.data = data;
+    this.data.selInitiative = 0;
+  }
+  
+  static get defaultOptions() {
+    return mergeObject(super.defaultOptions, {
+      id: "letscontributesubmit",
+      classes: ["dtb", "submit"],
+      title: game.i18n.localize("tblc.submitTitle"),
+      template: "modules/data-toolbox/templates/letscontribute/submit.html",
+      width: 600,
+      height: "auto",
+      closeOnSubmit: false,
+      submitOnClose: false,
+    });
+  }
+  
+  async getData() {
+    // retrieve initiatives
+    if(!this.data.initiatives) {
+      let client = new LetsContributeClient()
+      const response = await client.get('/initiatives/' + game.system.id)
+      if (!response || response.status != 200) {                  
+        console.log("Error during submit: ", response ? response : "server unreachable")
+        let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
+        ui.notifications.error(game.i18n.format("tblc.msgInitiativesError", { code: code}));
+      } else {
+        this.data.initiatives = response.data
+      }
+    }
+    // append additional details
+    let selInitiative = null
+    this.data.initiatives.forEach( i => { if(i.id == this.data.selInitiative) { selInitiative = i; return; } } );
+    if(selInitiative) {
+      this.data.initiativeDescription = selInitiative.description
+      this.data.initiativeWarning = ""
+    } else {
+      this.data.initiativeDescription = game.i18n.localize("tblc.noInitiativeDescription")
+      this.data.initiativeWarning = "warning"
+    }
+    return this.data
+  }
 
+  activateListeners(html) {
+    super.activateListeners(html);
+    html.find(".dialog-button").click(this._onControl.bind(this));
+    html.find("select").change(this._onControl.bind(this));
+  }
+  
+  async _onControl(event) {
+    event.preventDefault();
+    const source = event.currentTarget;
+    if (source.classList.contains("dialog-button")) {
+      let data = {
+        compendium: this.data.compendium.collection,
+        system: this.data.system.id,
+        entity: this.data.entity
+      }
+      if(this.data.selInitiative > 0) {
+        data.initiative = Number(this.data.selInitiative)
+      }
+      console.log(data)
+      let client = new LetsContributeClient()
+      const response = await client.post('/item', data)
+      if (response && response.status == 200) {                  
+        ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: this.data.entity.name}));
+      } else {
+        console.log("Error during submit: ", response ? response : "server unreachable")
+        let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
+        ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: this.data.entity.name, code: code}));
+      }
+      this.close()
+    }  
+    else if (source.classList.contains("initiative")) {
+      console.log("Item in list changed")
+      this.data.selInitiative = source.options[source.selectedIndex].value
+      this.render()
+    }
+  }
+}
+
+
+/*************************
+ * REVIEW  
+ *************************/
 class LetsContributeReview extends FormApplication {
   
   static get defaultOptions() {
@@ -187,7 +282,7 @@ class LetsContributeReview extends FormApplication {
       classes: ["dtb", "review"],
       title: game.i18n.localize("tblc.reviewTitle"),
       template: "modules/data-toolbox/templates/letscontribute/review.html",
-      width: 700,
+      width: 1000,
       height: "auto",
       closeOnSubmit: false,
       submitOnClose: false,
@@ -241,8 +336,13 @@ class LetsContributeReview extends FormApplication {
           ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
           return
         }
+        // prepare the data to compare
         const source = await match.compendium.getEntity(match.entity._id)
-        new LetsContributeCompare({ entry: data.data, source: source.data.data}).render(true)
+        let left = duplicate(data)
+        delete left._id;
+        let right = duplicate(source.data)
+        delete right._id
+        new LetsContributeCompare({ entry: left, source: right}).render(true)
       } else {
         console.log("Data Toolbox | Unexpected response", response)
         ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
