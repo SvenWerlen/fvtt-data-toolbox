@@ -98,40 +98,7 @@ class LetsContribute {
       }
       
       new LetsContributeSubmit({ entity: entity, compendium: match.compendium, system: game.system }).render(true);
-//       renderTemplate("modules/data-toolbox/templates/letscontribute/submit.html", { 
-//           entity: entity, 
-//           compendium: match.compendium, 
-//           system: game.system,
-//           initiatives: response.data
-//       }).then(dlg => {
-//         new Dialog({
-//           title: game.i18n.localize("tblc.submitTitle"),
-//           content: dlg,
-//           buttons: {
-//             submit: {
-//               label: game.i18n.localize("tblc.understandAndSubmit"), 
-//               callback: async function(html) {
-//                 console.log(html)
-//                 return
-//                 data = {
-//                   compendium: match.compendium.collection,
-//                   system: game.system.id,
-//                   entity: entity
-//                 }
-//                 let client = new LetsContributeClient()
-//                 const response = await client.post('/item', data)
-//                 if (response && response.status == 200) {                  
-//                   ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: entity.name}));
-//                 } else {
-//                   console.log("Error during submit: ", response ? response : "server unreachable")
-//                   let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
-//                   ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: entity.name, code: code}));
-//                 }
-//               }
-//             }
-//           }
-//         }, { width: 600 }).render(true);
-//       });
+
     }, false);
   }
   
@@ -318,6 +285,7 @@ class LetsContributeReview extends FormApplication {
     const a = event.currentTarget;
     const entryId = a.closest(".item").dataset.entry;
     const entryName = a.closest(".item").dataset.name;
+    const initiativeId = a.closest(".item").dataset.initiative;
     const window = this
     
     // authentification required!
@@ -336,12 +304,29 @@ class LetsContributeReview extends FormApplication {
           ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
           return
         }
+        // retrieve initiative (if any)
+        let filter = null
+        if(initiativeId) {
+          const response = await client.get('/initiatives/' + game.system.id)
+          if (response && response.status == 200) {
+            response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
+          }
+        }
         // prepare the data to compare
         const source = await match.compendium.getEntity(match.entity._id)
         let left = duplicate(data)
         delete left._id;
         let right = duplicate(source.data)
         delete right._id
+        // filter data if initiative specified
+        if(filter && filter.length > 0) {
+          let filterObj = {}
+          filter.split(',').forEach( f => { filterObj[f] = "" })
+          filterObj = expandObject(filterObj)
+          left = filterObject(left, filterObj)
+          right = filterObject(right, filterObj)
+        }
+        
         new LetsContributeCompare({ entry: left, source: right}).render(true)
       } else {
         console.log("Data Toolbox | Unexpected response", response)
@@ -411,6 +396,9 @@ class LetsContributeReview extends FormApplication {
 }
 
 
+/*************************
+ * COMPARE  
+ *************************/
 class LetsContributeCompare extends FormApplication {
   
   static get defaultOptions() {
