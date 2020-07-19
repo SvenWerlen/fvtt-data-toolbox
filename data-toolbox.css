@@ -26,6 +26,14 @@
   color: red;
 }
 
+.dtb.submit .author {
+  width: 80%;
+}
+
+.dtb.submit .dialog-button {
+  margin-top: 10px;
+}
+
 .dtb.review ol.item-list li {
   padding: 2px 0 2px 0;
   background-color: rgba(155, 155, 155, 0.3);
@@ -44,8 +52,8 @@
   padding: 0 1px 0 1px;
 }
 
-.dtb.review ol.item-list .compendium, .dtb.review ol.item-list .initiative {
-  flex: 0 0 200px;
+.dtb.review ol.item-list .compendium, .dtb.review ol.item-list .initiative, .dtb.review ol.item-list .author {
+  flex: 0 0 150px;
   padding: 0 1px 0 1px;
 }
 
@@ -83,7 +91,6 @@
   -webkit-user-select: none; /* Chrome/Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE10+ */
-  
   -o-user-select: none;
   user-select: none;
   padding-left: 0.2em;

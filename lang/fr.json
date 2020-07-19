@@ -28,11 +28,16 @@
     "tblc.compendium": "Compendium",
     "tblc.initiative": "Initiative",
     "tblc.system": "Système",
+    "tblc.author": "Auteur",
     "tblc.submitTitle": "Confirmation d'envoi de données",
     "tblc.understandAndSubmit": "Je comprends (envoyer les données)",
     
     "tblc.noInitiative": "Aucune initiative",
     "tblc.noInitiativeDescription": "Si vous soumettez une contribution sans spécifier une initiative, celle-ci pourrait être rejetée!",
+    
+    "tblc.author": "Auteur",
+    "tblc.authorPlaceHolder": "ex identifiant Discord",
+    "tblc.authorDescription": "Aide les réviseurs à identifier les contributions et éventullement vous contacter. Laisser vide si vous souhaitez rester anonyme",
     
     "tblc.reviewTitle": "Réviser les contributions",
     "tblc.reviewInfo": "Si vous avez les privilèges nécessaires, vous pouvez réviser les contributions soumises ci-dessous (voir les différences, tester localement, marquer 'accepté' ou 'refusé' ou simplement supprimer).",

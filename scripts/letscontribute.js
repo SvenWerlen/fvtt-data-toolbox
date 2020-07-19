@@ -66,6 +66,7 @@ class LetsContributeClient {
 class LetsContribute {
   
   static lastSelectedInitiative = 0
+  static lastAuthor = ""
   
   constructor(hook, type, query) {
     Hooks.on(hook, this.handle.bind(this));
@@ -159,7 +160,14 @@ class LetsContributeSubmit extends FormApplication {
   constructor(data) {
     super()
     this.data = data;
-    this.data.selInitiative = LetsContribute.lastSelectedInitiative;
+    if (typeof(Storage) !== "undefined") {
+      this.data.selInitiative = localStorage.dtlcLastInitiative ? Number(localStorage.dtlcLastInitiative) : 0
+      this.data.author = localStorage.dtlcAuthor ? localStorage.dtlcAuthor : ""
+    } else {
+      this.data.selInitiative = LetsContribute.lastSelectedInitiative;
+      this.data.author = LetsContribute.lastAuthor;
+    }
+    
   }
   
   static get defaultOptions() {
@@ -204,7 +212,8 @@ class LetsContributeSubmit extends FormApplication {
   activateListeners(html) {
     super.activateListeners(html);
     html.find(".dialog-button").click(this._onControl.bind(this));
-    html.find("select").change(this._onControl.bind(this));
+    html.find(".initiative").change(this._onControl.bind(this));
+    html.find(".author").change(this._onControl.bind(this));
   }
   
   async _onControl(event) {
@@ -218,8 +227,19 @@ class LetsContributeSubmit extends FormApplication {
       }
       if(this.data.selInitiative > 0) {
         data.initiative = Number(this.data.selInitiative)
-        LetsContribute.lastSelectedInitiative = data.initiative
       }
+      if(this.data.author.length > 0) {
+        data.author = this.data.author
+      }
+      // keep choices in storage
+      if (typeof(Storage) !== "undefined") {
+        localStorage.dtlcLastInitiative = data.initiative ? data.initiative : 0
+        localStorage.dtlcAuthor = this.data.author
+      } else {
+        LetsContribute.lastSelectedInitiative = data.initiative ? data.initiative : 0
+        LetsContribute.lastAuthor = this.data.author
+      }
+      // submit data
       let client = new LetsContributeClient()
       const response = await client.post('/item', data)
       if (response && response.status == 200) {                  
@@ -235,6 +255,9 @@ class LetsContributeSubmit extends FormApplication {
       console.log("Item in list changed")
       this.data.selInitiative = source.options[source.selectedIndex].value
       this.render()
+    }
+    else if (source.classList.contains("author")) {
+      this.data.author = source.value
     }
   }
 }
@@ -338,9 +361,40 @@ class LetsContributeReview extends FormApplication {
     else if (a.classList.contains("import")) {
       let response = await client.get(`/item/${entryId}`)
       if( response.status == 200 ) {
-        if( response.data._id ) { delete response.data._id; }
-        await Item.create(response.data)
-        ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: response.data.name}));
+        // retrieve initiative (if any)
+        let filter = null
+        if(initiativeId) {
+          const response = await client.get('/initiatives/' + game.system.id)
+          if (response && response.status == 200) {
+            response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
+          }
+          
+        }
+        let objectToCreate = null
+        // prepare data to import
+        if(filter && filter.length > 0) {
+          ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
+          let data = response.data
+          let match = await LetsContribute.getSearchEntryFromName(data.name)
+          if( !match ) {
+            ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
+            return
+          }
+          let source = await match.compendium.getEntity(match.entity._id)
+          source = duplicate(source.data)
+          delete source._id
+          
+          let filterObj = {}
+          filter.split(',').forEach( f => { filterObj[f] = "" } )
+          filterObj = expandObject(filterObj)
+          let contribution = filterObject(response.data, filterObj)
+          objectToCreate = mergeObject(source, contribution)
+        } else {
+          objectToCreate = duplicate( response.data );
+          if( objectToCreate._id ) { delete objectToCreate._id; }
+        }
+        await Item.create(objectToCreate)
+        ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: objectToCreate.name}));
       } else {
         console.log("Data Toolbox | Unexpected response", response)
         ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))

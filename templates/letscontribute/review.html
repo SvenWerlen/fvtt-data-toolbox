@@ -24,11 +24,14 @@
       <div class="compendium">
         <h4>{{localize "tblc.compendium"}}</h4>
       </div>
+
+      <div class="author">
+        <h4>{{localize "tblc.author"}}</h4>
+      </div>
       
       <div class="initiative">
         <h4>{{localize "tblc.initiative"}}</h4>
       </div>
-      
       
       <div class="controls">
         <h4>{{localize "tblc.actions"}}</h4>
@@ -52,6 +55,15 @@
         {{entry.compendium}}
       </div>
       
+      <div class="author">
+        {{#if entry.author}}
+          {{entry.author}}
+        {{/if}}
+        {{#unless entry.author}}
+          -
+        {{/unless}}
+      </div>
+      
       <div class="initiative">
         {{#if entry.initiative}}
           {{entry.initiative}}
@@ -60,7 +72,6 @@
           -
         {{/unless}}
       </div>
-      
       
       <div class="controls">
         <a class="control compare" title="{{localize "tblc.actionCompare"}}">
