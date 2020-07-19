@@ -187,7 +187,7 @@ class LetsContributeSubmit extends FormApplication {
     // retrieve initiatives
     if(!this.data.initiatives) {
       let client = new LetsContributeClient()
-      const response = await client.get('/initiatives/' + game.system.id)
+      const response = await client.get('/initiatives/' + this.data.compendium.collection)
       if (!response || response.status != 200) {                  
         console.log("Error during submit: ", response ? response : "server unreachable")
         let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")

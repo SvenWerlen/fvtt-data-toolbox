@@ -21,7 +21,7 @@
     "tb.inProcess": "{count}/{total}",
     "tb.processCompleted": "{count} {type}s importés avec succès!",
     
-    "tblc.submitInfo": "Les données de l'élément seront envoyées sur un serveur en tant que contribution de manière à pouvoir être révisée et éventullement intégrée dans le compendium du système.",
+    "tblc.submitInfo": "Les données de l'élément seront envoyées sur un serveur en tant que contribution de manière à pouvoir être révisée et éventuellement intégrée dans le compendium ciblé.",
     "tblc.submitReadMore": "Voir documentation",
     "tblc.item": "Élément",
     "tblc.type": "Type",
