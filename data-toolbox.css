@@ -22,7 +22,7 @@
   padding-bottom: 5px;
 }
 
-.dtb.submit .description.warning {
+.dtb.submit .warning {
   color: red;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .dtb.review ol.item-list .compendium, .dtb.review ol.item-list .initiative, .dtb.review ol.item-list .author {
-  flex: 0 0 150px;
+  flex: 0 0 200px;
   padding: 0 1px 0 1px;
 }
 

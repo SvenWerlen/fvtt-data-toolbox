@@ -244,7 +244,13 @@ class LetsContributeSubmit extends FormApplication {
       const response = await client.post('/item', data)
       if (response && response.status == 200) {                  
         ui.notifications.info(game.i18n.format("tblc.msgSubmitSuccess", { entryName: this.data.entity.name}));
-      } else {
+      }
+      else if(response && response.status == 403) {
+        this.data.noReviewer = true
+        this.render()
+        return
+      }
+      else {
         console.log("Error during submit: ", response ? response : "server unreachable")
         let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
         ui.notifications.error(game.i18n.format("tblc.msgSubmitError", { entryName: this.data.entity.name, code: code}));
@@ -274,7 +280,7 @@ class LetsContributeReview extends FormApplication {
       classes: ["dtb", "review"],
       title: game.i18n.localize("tblc.reviewTitle"),
       template: "modules/data-toolbox/templates/letscontribute/review.html",
-      width: 1000,
+      width: 1100,
       height: "auto",
       closeOnSubmit: false,
       submitOnClose: false,

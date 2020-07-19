@@ -31,6 +31,7 @@
     "tblc.author": "Auteur",
     "tblc.submitTitle": "Confirmation d'envoi de données",
     "tblc.understandAndSubmit": "Je comprends (envoyer les données)",
+    "tblc.noReviewer": "Il n'y a malheureusement aucun réviseur pour ce compendium. Aucune contribution ne peut être soumise pour un compendium pour lequel personne est en charge de la révision. Consultez la documentation ci-dessus pour plus de détails.",
     
     "tblc.noInitiative": "Aucune initiative",
     "tblc.noInitiativeDescription": "Si vous soumettez une contribution sans spécifier une initiative, celle-ci pourrait être rejetée!",

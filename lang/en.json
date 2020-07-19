@@ -31,6 +31,8 @@
     "tblc.author": "Author",
     "tblc.submitTitle": "Data submit confirmation",
     "tblc.understandAndSubmit": "I understand (submit the data)",
+    "tblc.noReviewer": "There is unfortunately no reviewer for that compendium. Contributions cannot be submitted for compendiums without a person in charge of reviewing them. Please see above documentation for more details.",
+
     
     "tblc.noInitiative": "No initiative",
     "tblc.noInitiativeDescription": "If you submit without specifying an initiative, your contribution could be rejected!",
@@ -72,7 +74,7 @@
     "ERROR.tlbcConfigurationMissing": "You need to configure Let's contribute authentication details (module configuration).",
     "ERROR.tlbcServerUnreachable": "Server unreachable",
     "ERROR.tlbcUnexpectedResponse": "Unexpected response from server (see F12)!",
-    
+        
     "tblc.compareTitle": "Compare contribution with source from compendium",
     "tblc.compareInfo": "Compare the changes between the submitted entry (left) and the source from the compendium (right).",
     

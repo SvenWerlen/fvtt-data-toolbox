@@ -1,9 +1,9 @@
 # Data Toolbox - Let's Contribute
 
-*Let's Contribute*, which is part of the Data Toolbox, provides a set of tools 
+*Let's Contribute*, which is part of the [Data Toolbox module](../..), provides a set of tools 
 and interfaces which help the community contribute and improve compendiums.
 
-_Note: this part of the module is under development (not yet officially available)_
+![Overview](/doc/img/letscontribute-submit.jpg)
 
 ## Typical use case
 
@@ -18,20 +18,21 @@ _Note: this part of the module is under development (not yet officially availabl
   * Simply delete it
 * Finally, the **maintainers** of the system can import and merge all 'accepted' contributions to the compendium and make them available to everyone
 
-## Submit entry (contribute)
+![Overview](/doc/img/letscontribute-diagram.jpg)
 
-![Submit an entry](/doc/img/letscontibute-submit.jpg)
 
-## Review contributions
+## How to install
 
-![Submit an entry](/doc/img/letscontibute-review.jpg)
+*Let's Contribute* is part of the [Data Toolbox module](../..). Simply install it from the module list.
 
-### Compare submitted entry with source (compendium)
+## How to use
 
-![Submit an entry](/doc/img/letscontibute-compare.jpg)
+* As [regular user](user.md), I want to **submit changes** to help improve compendiums I'm use
+* As [module/system contributor](reviewer.md), I want to **review** submitted contributions
+* As [module/system developer](admin.md), I want to **merge** accepted contributions with the original compendiums
 
-### How to become a reviewer?
+## Contact me
 
-* Contact me on Discord (Dorgendubal#3348) and mention the system(s) for which you would like to be a reviewer
+You can contact me on Discord (Dorgendubal#3348)
 
   

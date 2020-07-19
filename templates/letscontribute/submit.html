@@ -39,6 +39,11 @@
       <i class="help-icon fas fa-info-circle" title="{{localize "tblc.authorDescription"}}"></i>
     </label>
   </div>
+  {{#if noReviewer}}
+  <div class="form-group warning">
+    {{localize "tblc.noReviewer"}}
+  </div>
+  {{/if}}
   <div class="form-group">
     <button class="dialog-button" data-button="submit">
       <i class="fas fa-check"></i>{{localize "tblc.understandAndSubmit"}}
