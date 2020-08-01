@@ -1,6 +1,6 @@
 # Data Toolbox - Let's Contribute
 
-*Let's Contribute*, which is part of the [Data Toolbox module](../..), provides a set of tools 
+*Let's Contribute*, which is part of the [Data Toolbox module](../../), provides a set of tools 
 and interfaces which help the community contribute and improve compendiums.
 
 ![Overview](/doc/img/letscontribute-submit.jpg)
