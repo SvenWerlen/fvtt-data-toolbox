@@ -113,8 +113,13 @@
   font-size: small;
 }
 
+.dtb.compare div.codeLine span.code {
+  padding-left: 13px;
+}
+
 .dtb.compare div.codeLine span.diff {
-    color: #c00;
+  color: #c00;
+  padding-left: 0px;
 }
 
 .dtb.compare div.codeLine span.eq {

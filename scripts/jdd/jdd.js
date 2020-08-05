@@ -666,9 +666,18 @@ var jdd = {
      * Process the specified diff
      */
     processDiffs: function (html1, html2) {
+        let linesDone1 = []
+        let linesDone2 = []
         jdd.diffs.forEach(function (diff) {
-            html1.find('div.line' + diff.path1.line + ' span.code').addClass(diff.type).addClass('diff');
-            html2.find('div.line' + diff.path2.line + ' span.code').addClass(diff.type).addClass('diff');
+            let icon = diff.type == "missing" ? "plus" : "not-equal"  
+            if( linesDone1.indexOf(diff.path1.line) < 0 ) {
+              html1.find('div.line' + diff.path1.line + ' span.code').addClass(diff.type).addClass('diff').prepend(`<i class="fas fa-${icon}"></i>`); 
+              linesDone1.push(diff.path1.line)
+            }
+            if( linesDone2.indexOf(diff.path2.line) < 0 ) {
+              html2.find('div.line' + diff.path2.line + ' span.code').addClass(diff.type).addClass('diff').prepend(`<i class="fas fa-${icon}"></i>`);
+              linesDone2.push(diff.path2.line)
+            }
         });
 
         jdd.diffs = jdd.diffs.sort(function (a, b) {

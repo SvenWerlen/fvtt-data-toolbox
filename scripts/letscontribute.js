@@ -76,6 +76,15 @@ class LetsContribute {
   
   handle(app, html, data) {
 
+    // only actors of type npc (bestiary) supported
+    if( app.entity.entity == "Actor" && app.entity.data.type != "npc" ) { return; }
+    // if not editable, it means that it wasn't modified (compendium)
+    if( !app.isEditable ) { return; }
+    // special case for JournalEntry
+    if( app.entity.entity == "JournalEntry" ) {
+      app.entity.data.type = "journal"
+    }
+    
     const handle = $(
         `<div class="window-upload-handle">
             <i class="fas fa-upload"></i>
@@ -93,7 +102,7 @@ class LetsContribute {
       
       // retrieve pack entry matching name (there is not referenced ID?)
       ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
-      let match = await LetsContribute.getSearchEntryFromName(entity.name)
+      let match = await LetsContribute.getSearchEntryFromName(entity.name, this.type)
       
       if(!match) {
         ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
@@ -109,12 +118,13 @@ class LetsContribute {
    * Returns the entity matching the given name by searching in all compendiums
    * @return { entity, compendium } or null if not found
    */
-  static async getSearchEntryFromName(entityName) {
+  static async getSearchEntryFromName(entityName, entity) {
+    console.log(entity)
     let packs = game.packs.entries
     let match = null
     let compendium = null
     for(let p=0; p<packs.length; p++) {
-      if(packs[p].entity !== "Item") continue;
+      if(packs[p].entity !== entity) continue;
       const index = await packs[p].getIndex()
       match = await index.find(e => e.name === entityName)
       if(match) {
@@ -128,6 +138,17 @@ class LetsContribute {
       return null;
     }
   };
+  
+  /**
+   * Returns the entity based on the give type
+   */
+  static getEntityFromType(type) {
+    switch(type) {
+      case "npc": return "Actor"
+      case "journal": return "JournalEntry"
+      default: return "Item"
+    }
+  }
   
   /**
    * Returns all sheets of given entity type (ex: item, actor, etc.)
@@ -330,7 +351,7 @@ class LetsContributeReview extends FormApplication {
       if( response.status == 200 ) {
         ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
         let data = response.data
-        let match = await LetsContribute.getSearchEntryFromName(data.name)
+        let match = await LetsContribute.getSearchEntryFromName(data.name, LetsContribute.getEntityFromType(data.type))
         if( !match ) {
           ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
           return
@@ -338,7 +359,7 @@ class LetsContributeReview extends FormApplication {
         // retrieve initiative (if any)
         let filter = null
         if(initiativeId) {
-          const response = await client.get('/initiatives/' + game.system.id)
+          const response = await client.get('/initiatives/' + match.compendium.collection)
           if (response && response.status == 200) {
             response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
           }
@@ -349,6 +370,7 @@ class LetsContributeReview extends FormApplication {
         delete left._id;
         let right = duplicate(source.data)
         delete right._id
+        if(data.type == "journal") { delete left.type }
         // filter data if initiative specified
         if(filter && filter.length > 0) {
           let filterObj = {}
@@ -367,29 +389,31 @@ class LetsContributeReview extends FormApplication {
     else if (a.classList.contains("import")) {
       let response = await client.get(`/item/${entryId}`)
       if( response.status == 200 ) {
+        let objectToCreate = null
+        // prepare data to import
+        ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
+        let data = response.data
+        let match = await LetsContribute.getSearchEntryFromName(data.name, LetsContribute.getEntityFromType(data.type))
+        if( !match ) {
+          ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
+          return
+        }
+        if(data.type == "journal") { delete data.type }
+        let source = await match.compendium.getEntity(match.entity._id)
+        source = duplicate(source.data)
+        delete source._id
+        
         // retrieve initiative (if any)
         let filter = null
         if(initiativeId) {
-          const response = await client.get('/initiatives/' + game.system.id)
+          const response = await client.get('/initiatives/' + match.compendium.collection)
           if (response && response.status == 200) {
             response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
           }
           
         }
-        let objectToCreate = null
-        // prepare data to import
+        
         if(filter && filter.length > 0) {
-          ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
-          let data = response.data
-          let match = await LetsContribute.getSearchEntryFromName(data.name)
-          if( !match ) {
-            ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
-            return
-          }
-          let source = await match.compendium.getEntity(match.entity._id)
-          source = duplicate(source.data)
-          delete source._id
-          
           let filterObj = {}
           filter.split(',').forEach( f => { filterObj[f] = "" } )
           filterObj = expandObject(filterObj)
@@ -494,4 +518,6 @@ class LetsContributeCompare extends FormApplication {
 
 Hooks.once('ready', () => {
   LetsContribute.getSheets(CONFIG.Item).forEach(sheetClass => new LetsContribute(`render${sheetClass}`, 'Item'));
+  LetsContribute.getSheets(CONFIG.Actor).forEach(sheetClass => new LetsContribute(`render${sheetClass}`, 'Actor'));
+  new LetsContribute(`renderJournalSheet`, 'JournalEntry');
 });
