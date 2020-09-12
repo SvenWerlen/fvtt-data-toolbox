@@ -56,6 +56,7 @@ class GenerateCompendiumDialog extends Dialog {
     let source = html.find('input[name="source"]').val();
     let template = html.find('input[name="template"]').val();
     let entity = html.find('select[name="entity"]').val();
+    let compendiumName = html.find('input[name="compendium"]').val();
     
     if (entity != "Actor" && entity != "Item") {
       ui.notifications.error(game.i18n.localize("ERROR.tbInvalidEntity"));
@@ -72,6 +73,11 @@ class GenerateCompendiumDialog extends Dialog {
       game.settings.set("data-toolbox", "source", source);
       game.settings.set("data-toolbox", "template", template);
       game.settings.set("data-toolbox", "entity", entity);
+      game.settings.set("data-toolbox", "compendium", compendiumName);
+      
+      if( !compendiumName || compendiumName.length == 0 ) {
+        compendiumName = "Toolbox Data"
+      }
       
       // load data (as CSV)
       let data;
@@ -122,17 +128,18 @@ class GenerateCompendiumDialog extends Dialog {
       const totalCount = hasSample ? data.length - 1 : data.length
       
       // delete compendium if exists
-      let compendium = game.packs.get("world.toolbox-data");
+      const compendiumFilename = compendiumName.slugify({strict: true})
+      let compendium = game.packs.get("world." + compendiumFilename);
       if (compendium) {
         await compendium.delete()
       }
       
       // create new compendium
-      await Compendium.create({label: "Toolbox Data", entity: entity})
-      const pack = await game.packs.find(p => p.metadata.label === "Toolbox Data");
+      await Compendium.create({label: compendiumName, entity: entity})
+      const pack = await game.packs.find(p => p.metadata.label === compendiumName);
       if (!pack) { return; }
       
-      console.log(fieldDefault)
+      //console.log(fieldDefault)
       
       let jsonData = null;
       try {
@@ -199,6 +206,7 @@ Hooks.once("init", () => {
   game.settings.register("data-toolbox", "source", { scope: "world", config: false, type: String, default: "modules/data-toolbox/samples/bestiary-sample.csv" });
   game.settings.register("data-toolbox", "template", { scope: "world", config: false, type: String, default: "modules/data-toolbox/samples/creature-template.json" });
   game.settings.register("data-toolbox", "entity", { scope: "world", config: false, type: String, default: "Actor" });
+  game.settings.register("data-toolbox", "compendium", { scope: "world", config: false, type: String, default: "" });
   
   game.settings.register("data-toolbox", "lcLogin", {
     name: game.i18n.localize("SETTINGS.tblcLogin"), 
@@ -222,13 +230,12 @@ Hooks.once("init", () => {
 function dtShowToolbox() {
   console.log("Data Toolbox | Show");
   
-  game.settings.get("data-toolbox", "source")
-  
   renderTemplate("modules/data-toolbox/templates/dialog-toolbox.html", { 
       source: game.settings.get("data-toolbox", "source"), 
       template: game.settings.get("data-toolbox", "template"),
       itemSelected: game.settings.get("data-toolbox", "entity") === "Item" ? "selected" : "",
-      actorSelected: game.settings.get("data-toolbox", "entity") === "Actor" ? "selected" : ""
+      actorSelected: game.settings.get("data-toolbox", "entity") === "Actor" ? "selected" : "",
+      compendium: game.settings.get("data-toolbox", "compendium")
     }).then(html => { (new GenerateCompendiumDialog(null, {html: html})).render(true); }
   );
 }
