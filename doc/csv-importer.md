@@ -17,6 +17,7 @@ This part of the module provides tools for generating compendium based on struct
   * As source file, browse or enter the following path: `modules/data-toolbox/samples/bestiary-sample.csv`
   * As template file, browse or enter the following path: `modules/data-toolbox/samples/creature-template.json`
   * Choose `Actor` as entity type
+  * Specify a `Compendium name` (optional)
 * Click on `Generate compendium` button
 * Wait until process is completed (99 creatures)
 * Take a look at the newly created compendium "Toolbox Data"
