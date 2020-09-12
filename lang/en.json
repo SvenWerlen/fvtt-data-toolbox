@@ -16,6 +16,7 @@
     "tb.entityType": "Entity type",
     "tb.actor": "Actor",
     "tb.item": "Item",
+    "tb.compendiumName": "Compendium name",
     
     "tb.processStarted": "Process started. Please wait ... it could take minutes!!",
     "tb.inProcess": "{count}/{total}",
