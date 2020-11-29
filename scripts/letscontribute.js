@@ -409,7 +409,6 @@ class LetsContributeReview extends FormApplication {
     }
     else if (a.classList.contains("import")) {
       let response = await client.get(`/item/${entryId}`)
-      console.log(response)
       if( response.status == 200 ) {
         let objectToCreate = null
         // prepare data to import
@@ -447,6 +446,32 @@ class LetsContributeReview extends FormApplication {
         }
         await Item.create(objectToCreate)
         ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: objectToCreate.name}));
+      } else {
+        console.log("Data Toolbox | Unexpected response", response)
+        ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+      }
+    }
+    else if (a.classList.contains("merge")) {
+      let response = await client.get(`/item/${entryId}`)
+      if( response.status == 200 ) {
+        let objectToCreate = null
+        // prepare data to import
+        ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
+        let data = response.data
+        const pack = game.packs.get(data.compendium);
+        if(pack) {
+          let objectToCreate = duplicate( response.data.data );
+          if( objectToCreate._id ) { delete objectToCreate._id; }
+          // create new item
+          let item = await Item.create(objectToCreate)
+          // import into compendium
+          await pack.importEntity(item)
+          // delete temporary item
+          await item.delete()
+          ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: objectToCreate.name}));
+        } else {
+          console.error("Data Toolbox | Invalid compendium", data.compendium)
+        }
       } else {
         console.log("Data Toolbox | Unexpected response", response)
         ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))

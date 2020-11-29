@@ -56,6 +56,7 @@
     "tblc.msgSubmitSuccess": "{entryName} has been successfully sent!",
     "tblc.msgSubmitError": "{entryName} couldn't be sent ({code})!",
     "tblc.msgImportSuccess": "{entryName} has been successfully imported!",
+    "tblc.msgMergeSuccess": "{entryName} has been successfully merged!",
     "tblc.msgInitiativesError": "Couldn't retrieve initiatives ({code})!",
     "tblc.msgPreparingReviewUI": "Preparing the review UI ... please wait!!",
     

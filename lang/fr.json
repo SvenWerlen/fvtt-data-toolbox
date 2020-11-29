@@ -49,12 +49,13 @@
     "tblc.actionCompare": "Comparer l'élément soumis avec l'original/la source du compendium",
     "tblc.actionImport": "Importer l'élément pour tester",
     "tblc.actionDelete": "Supprimer la contribution",
-    "tblc.actionMerge": "Insérer dans le compendium",
+    "tblc.actionMerge": "Intégrer dans le compendium",
     
     "tblc.msgSearchingInCompendium": "Recherche de l'élément correspondant dans les compendiums... veuillez patienter!!",
     "tblc.msgSubmitSuccess": "{entryName} a été envoyé avec succès!",
     "tblc.msgSubmitError": "{entryName} n'a pas pu être envoyé ({code})!",
     "tblc.msgImportSuccess": "{entryName} a été importé avec succès!",
+    "tblc.msgMergeSuccess": "{entryName} a été intégré avec succès!",
     "tblc.msgInitiativesError": "Initiatives n'ont pas pu être récupérées ({code})!",
     "tblc.msgPreparingReviewUI": "Préparation de l'interface de révision... veuillez patienter!!",
     
