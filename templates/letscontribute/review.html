@@ -74,12 +74,19 @@
       </div>
       
       <div class="controls">
+        {{#if entry.found}}
         <a class="control compare" title="{{localize "tblc.actionCompare"}}">
           <i class="fas fa-not-equal"></i>
         </a>
+        {{/if}}
         <a class="control import" title="{{localize "tblc.actionImport"}}">
           <i class="fas fa-download"></i>
         </a>
+        {{#unless entry.found}}
+        <a class="control merge" title="{{localize "tblc.actionMerge"}}">
+          <i class="fas fa-atlas"></i>
+        </a>
+        {{/unless}}
         <a class="control accept" title="{{localize "tblc.actionAccept"}}">
           <i class="fas fa-thumbs-up"></i>
         </a>

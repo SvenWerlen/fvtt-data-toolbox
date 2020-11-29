@@ -50,12 +50,14 @@
     "tblc.actionCompare": "Compare the submited item with the original from compendium",
     "tblc.actionImport": "Import the submited item for testing",
     "tblc.actionDelete": "Delete the item",
+    "tblc.actionMerge": "Merge into the compendium",
     
     "tblc.msgSearchingInCompendium": "Searching item match in compendium... please wait!!",
     "tblc.msgSubmitSuccess": "{entryName} has been successfully sent!",
     "tblc.msgSubmitError": "{entryName} couldn't be sent ({code})!",
     "tblc.msgImportSuccess": "{entryName} has been successfully imported!",
     "tblc.msgInitiativesError": "Couldn't retrieve initiatives ({code})!",
+    "tblc.msgPreparingReviewUI": "Preparing the review UI ... please wait!!",
     
     "tblc.acceptTitle": "Accept contribution",
     "tblc.acceptContent": "Are you sure you want to mark <i>{name}</i> as <b>accepted</b>? The entry will disappear from the list.",

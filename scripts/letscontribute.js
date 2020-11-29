@@ -119,7 +119,6 @@ class LetsContribute {
    * @return { entity, compendium } or null if not found
    */
   static async getSearchEntryFromName(entityName, entity) {
-    console.log(entity)
     let packs = game.packs.entries
     let match = null
     let compendium = null
@@ -137,6 +136,17 @@ class LetsContribute {
     } else {
       return null;
     }
+  };
+  
+  /**
+   * Returns the entity matching the given name by searching in all compendiums
+   * @return { entity, compendium } or null if not found
+   */
+  static async findEntityInCompendium(compendiumName, entityName) {
+    const pack = game.packs.get(compendiumName);
+    if(!pack) { return null; }
+    await pack.getIndex();
+    return pack.index.find(e => e.name === entityName);
   };
   
   /**
@@ -169,6 +179,7 @@ class LetsContribute {
   };
   
   static async showReviewerUI() {
+    ui.notifications.info(game.i18n.localize("tblc.msgPreparingReviewUI"))
     new LetsContributeReview().render(true)
   }
 };
@@ -322,6 +333,14 @@ class LetsContributeReview extends FormApplication {
     }
     const response = await client.get('/items')
     if( response && response.status == 200 ) {
+      for(let i = 0; i<response.data.length; i++) {
+        console.log(`LetsContribute | Looking for ${response.data[i].name} in compendium ${response.data[i].compendium}`)
+        let match = await LetsContribute.findEntityInCompendium(response.data[i].compendium, response.data[i].name)
+        if(match) {
+           response.data[i].found = true
+        }
+      }
+      
       return { entries: response.data };
     }
     return { error: game.i18n.localize("ERROR.tlbcServerUnreachable") }
@@ -337,7 +356,7 @@ class LetsContributeReview extends FormApplication {
     const a = event.currentTarget;
     const entryId = a.closest(".item").dataset.entry;
     const entryName = a.closest(".item").dataset.name;
-    const initiativeId = a.closest(".item").dataset.initiative;
+    let initiativeId = a.closest(".item").dataset.initiative;
     const window = this
     
     // authentification required!
@@ -348,10 +367,11 @@ class LetsContributeReview extends FormApplication {
     
     if (a.classList.contains("compare")) {
       let response = await client.get(`/item/${entryId}`)
+      console.log(response)
       if( response.status == 200 ) {
         ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
         let data = response.data
-        let match = await LetsContribute.getSearchEntryFromName(data.name, LetsContribute.getEntityFromType(data.type))
+        let match = await LetsContribute.findEntityInCompendium(data.compendium, data.data.name)
         if( !match ) {
           ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
           return
@@ -359,14 +379,15 @@ class LetsContributeReview extends FormApplication {
         // retrieve initiative (if any)
         let filter = null
         if(initiativeId) {
-          const response = await client.get('/initiatives/' + match.compendium.collection)
+          const response = await client.get('/initiatives/' + data.compendium)
           if (response && response.status == 200) {
             response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
           }
         }
         // prepare the data to compare
-        const source = await match.compendium.getEntity(match.entity._id)
-        let left = duplicate(data)
+        const pack = game.packs.get(data.compendium);
+        const source = await pack.getEntity(match._id)
+        let left = duplicate(data.data)
         delete left._id;
         let right = duplicate(source.data)
         delete right._id
@@ -388,25 +409,22 @@ class LetsContributeReview extends FormApplication {
     }
     else if (a.classList.contains("import")) {
       let response = await client.get(`/item/${entryId}`)
+      console.log(response)
       if( response.status == 200 ) {
         let objectToCreate = null
         // prepare data to import
         ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
         let data = response.data
-        let match = await LetsContribute.getSearchEntryFromName(data.name, LetsContribute.getEntityFromType(data.type))
+        let match = await LetsContribute.findEntityInCompendium(data.compendium, data.data.name)
         if( !match ) {
-          ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
-          return
+          initiativeId = null
         }
         if(data.type == "journal") { delete data.type }
-        let source = await match.compendium.getEntity(match.entity._id)
-        source = duplicate(source.data)
-        delete source._id
         
         // retrieve initiative (if any)
         let filter = null
         if(initiativeId) {
-          const response = await client.get('/initiatives/' + match.compendium.collection)
+          const response = await client.get('/initiatives/' + data.compendium)
           if (response && response.status == 200) {
             response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
           }
@@ -414,13 +432,17 @@ class LetsContributeReview extends FormApplication {
         }
         
         if(filter && filter.length > 0) {
+          const pack = game.packs.get(data.compendium);
+          const source = await pack.getEntity(match._id)
+          source = duplicate(source.data)
+          delete source._id
           let filterObj = {}
           filter.split(',').forEach( f => { filterObj[f] = "" } )
           filterObj = expandObject(filterObj)
-          let contribution = filterObject(response.data, filterObj)
+          let contribution = filterObject(response.data.data, filterObj)
           objectToCreate = mergeObject(source, contribution)
         } else {
-          objectToCreate = duplicate( response.data );
+          objectToCreate = duplicate( response.data.data );
           if( objectToCreate._id ) { delete objectToCreate._id; }
         }
         await Item.create(objectToCreate)
