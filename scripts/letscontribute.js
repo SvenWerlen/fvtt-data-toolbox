@@ -425,13 +425,20 @@ class LetsContributeReview extends FormApplication {
     if( ! await client.login() ) {
       return { error: game.i18n.localize("ERROR.tlbcNoRights") }
     }
+    if(!this.cache) this.cache = {}
     const response = await client.get('/items')
     if( response && response.status == 200 ) {
       for(let i = 0; i<response.data.length; i++) {
-        console.log(`LetsContribute | Looking for ${response.data[i].name} in compendium ${response.data[i].compendium}`)
-        let match = await LetsContribute.findEntityInCompendium(response.data[i].compendium, response.data[i].name)
-        if(match) {
-           response.data[i].found = true
+        const key = `${response.data[i].compendium}#${response.data[i].name}`
+        if( key in this.cache ) {
+          response.data[i].found = this.cache[key]
+        } else {
+          console.log(`LetsContribute | Looking for ${response.data[i].name} in compendium ${response.data[i].compendium}`)
+          let match = await LetsContribute.findEntityInCompendium(response.data[i].compendium, response.data[i].name)
+          if(match) {
+            response.data[i].found = true
+          }
+          this.cache[key] = match != null
         }
       }
       
