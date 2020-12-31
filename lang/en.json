@@ -32,11 +32,13 @@
     "tblc.author": "Author",
     "tblc.submitTitle": "Data submit confirmation",
     "tblc.understandAndSubmit": "I understand (submit the data)",
+    "tblc.changeCompendium": "Choose another compendium",
     "tblc.noReviewer": "There is unfortunately no reviewer for that compendium. Contributions cannot be submitted for compendiums without a person in charge of reviewing them. Please see above documentation for more details.",
-
     
     "tblc.noInitiative": "No initiative",
     "tblc.noInitiativeDescription": "If you submit without specifying an initiative, your contribution could be rejected!",
+
+    "tblc.chooseCompendiumTitle": "Choose a compendium",
     
     "tblc.author": "Author",
     "tblc.authorPlaceHolder": "e.g Discord identifier",
@@ -67,6 +69,8 @@
     "tblc.deleteTitle": "Delete contribution",
     "tblc.deleteContent": "Are you sure you want to delete <i>{name}</i>? Data will be lost!",
     
+    "tblc.validate": "Validate",
+
     "SETTINGS.tblcLogin": "(Let's contribute) Screenname",
     "SETTINGS.tblcLoginHint": "If you are a reviewer, specify the screenname used for authentication on Let's contribute server (See project documentation for more information).",
     "SETTINGS.tblcAccessKey": "(Let's contribute) Access key",

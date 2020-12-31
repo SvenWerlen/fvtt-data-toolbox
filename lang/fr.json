@@ -32,10 +32,13 @@
     "tblc.author": "Auteur",
     "tblc.submitTitle": "Confirmation d'envoi de données",
     "tblc.understandAndSubmit": "Je comprends (envoyer les données)",
+    "tblc.changeCompendium": "Choisir un autre compendium",
     "tblc.noReviewer": "Il n'y a malheureusement aucun réviseur pour ce compendium. Aucune contribution ne peut être soumise pour un compendium pour lequel personne est en charge de la révision. Consultez la documentation ci-dessus pour plus de détails.",
     
     "tblc.noInitiative": "Aucune initiative",
     "tblc.noInitiativeDescription": "Si vous soumettez une contribution sans spécifier une initiative, celle-ci pourrait être rejetée!",
+    
+    "tblc.chooseCompendiumTitle": "Choisir un compendium",
     
     "tblc.author": "Auteur",
     "tblc.authorPlaceHolder": "ex identifiant Discord",
@@ -66,6 +69,8 @@
     "tblc.deleteTitle": "Supprimer la contribution",
     "tblc.deleteContent": "Êtes-vous sûr(e) de vouloir supprimer <i>{name}</i>? Les données seront perdues!",
     
+    "tblc.validate": "Valider",
+
     "SETTINGS.tblcLogin": "(Let's contribute) Nom d'utilisateur",
     "SETTINGS.tblcLoginHint": "Si vous êtes réviseur, veuillez spécifier le 'login' utilisé pour s'authentifier sur le serveur Let's contribute (Voir documentation du projet pour plus d'information).",
     "SETTINGS.tblcAccessKey": "(Let's contribute) Clé d'accès",
