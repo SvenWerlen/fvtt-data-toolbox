@@ -1,0 +1,18 @@
+<form>
+  <div class="form-group">
+    <label>
+    <select name="selCompendium" class="compendium">
+      {{#select selCompendium}}
+      {{#each compendiums}}
+      <option value="{{this.key}}">{{this.label}} ({{this.key}})</option>
+      {{/each}}
+      {{/select}}
+    </select>
+    </label>
+  </div>
+  <div class="form-group">
+    <button class="dialog-button" data-button="submit">
+      <i class="fas fa-check"></i>{{localize "tblc.validate"}}
+    </button>
+  </div>
+</form>

@@ -103,7 +103,7 @@ class LetsContribute {
       // retrieve pack entry matching name (there is not referenced ID?)
       ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
       let match = await LetsContribute.getSearchEntryFromName(entity.name, this.type)
-      
+
       if(!match) {
         ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
         return
@@ -147,6 +147,22 @@ class LetsContribute {
     if(!pack) { return null; }
     await pack.getIndex();
     return pack.index.find(e => e.name === entityName);
+  };
+
+  /**
+   * Returns the entity matching the given name by searching in the specified compendium
+   * @return { entity, compendium } or null if not found
+   */
+  static async getSearchEntryFromNameAndCompendium(entityName, compendiumName) {
+    let compendium = game.packs.get(compendiumName);
+    const index = await compendium.getIndex();
+    let entityToEdit = await index.find(e => e.name == entityName);
+
+    if(entityToEdit) {
+      return { entity: entityToEdit, compendium: compendium };
+    } else {
+      return null;
+    }
   };
   
   /**
@@ -199,7 +215,6 @@ class LetsContributeSubmit extends FormApplication {
       this.data.selInitiative = LetsContribute.lastSelectedInitiative;
       this.data.author = LetsContribute.lastAuthor;
     }
-    
   }
   
   static get defaultOptions() {
@@ -246,6 +261,7 @@ class LetsContributeSubmit extends FormApplication {
     html.find(".dialog-button").click(this._onControl.bind(this));
     html.find(".initiative").change(this._onControl.bind(this));
     html.find(".author").change(this._onControl.bind(this));
+    html.find(".changeCompendium").click(this._onControl.bind(this));
   }
   
   async _onControl(event) {
@@ -296,6 +312,84 @@ class LetsContributeSubmit extends FormApplication {
     }
     else if (source.classList.contains("author")) {
       this.data.author = source.value
+    }
+    // use case : the retrieved entity is not from the correct compendium, so the user wants to specify which compendium to search in
+    else if (source.classList.contains("changeCompendium")) {
+      new LetsContributeChooseCompendium({entity: this.data.entity}).render(true);
+      this.close();
+    }
+  }
+}
+
+
+/*************************
+ * SUBMIT - CHOOSE COMPENDIUM  
+ *************************/
+
+class LetsContributeChooseCompendium extends FormApplication {
+  
+  constructor(data) {
+    super()
+    this.data = data;    
+  }
+  
+  static get defaultOptions() {
+    return mergeObject(super.defaultOptions, {
+      id: "letscontributechoosecompendium",
+      classes: ["dtb", "submit"],
+      title: game.i18n.localize("tblc.chooseCompendiumTitle"),
+      template: "modules/data-toolbox/templates/letscontribute/choose-compendium.html",
+      width: 600,
+      height: "auto",
+      closeOnSubmit: false,
+      submitOnClose: false,
+    });
+  }
+
+  async getData() {
+    //retrieve compendiums
+    this.data.compendiums = [];
+    for(let key of game.packs.keys()) {
+      this.data.compendiums.push({key: key, label: game.packs.get(key).metadata.label});
+    }
+
+    this.data.compendiums.sort(function (a, b) {
+      return a.label.localeCompare(b.label);
+    });
+
+    if(!this.data.selCompendium) {
+      this.data.selCompendium = this.data.compendiums[0].key;
+    }
+
+    return this.data;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    html.find(".dialog-button").click(this._onControl.bind(this));
+    html.find(".compendium").change(this._onControl.bind(this));
+  }
+  
+  async _onControl(event) {
+    event.preventDefault();
+    const source = event.currentTarget;
+    // user validate their compendium choice
+    if (source.classList.contains("dialog-button")) {
+      let match = await LetsContribute.getSearchEntryFromNameAndCompendium(this.data.entity.name, this.data.selCompendium);
+      
+      if(!match) {
+        ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"));
+        return;
+      }
+
+      new LetsContributeSubmit({ entity: this.data.entity, compendium: game.packs.get(this.data.selCompendium), system: game.system }).render(true);
+      this.close();
+    }
+    // compendium selected changed
+    else if (source.classList.contains("compendium")) {
+      console.log("Compendium in list changed");
+      this.data.selCompendium = source.options[source.selectedIndex].value;
+      this.render();
     }
   }
 }
