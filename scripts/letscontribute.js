@@ -422,14 +422,23 @@ class LetsContributeReview extends FormApplication {
     }
     
     let client = new LetsContributeClient()
-    if( ! await client.login() ) {
+    if( !this.useDataInCache && ! await client.login() ) {
       return { error: game.i18n.localize("ERROR.tlbcNoRights") }
     }
     if(!this.cache) this.cache = {}
-    const response = await client.get('/items')
+    if(!this.selected) this.selected = {}
+    const response = this.useDataInCache ? this.cache["DATA"] : await client.get('/items')
+    this.cache["DATA"] = response
+    this.useDataInCache = false
+    let allSelected = true
+    let oneSelected = false
     if( response && response.status == 200 ) {
       for(let i = 0; i<response.data.length; i++) {
+        const id = response.data[i].id
         const key = `${response.data[i].compendium}#${response.data[i].name}`
+        response.data[i].selected = id in this.selected ? this.selected[id] : false
+        if(!response.data[i].selected) allSelected = false // at least 1 entry is not selected => uncheck all selected box
+        if(response.data[i].selected) oneSelected = true   // at least 1 entry is selected
         if( key in this.cache ) {
           response.data[i].found = this.cache[key]
         } else {
@@ -442,7 +451,8 @@ class LetsContributeReview extends FormApplication {
         }
       }
       
-      return { entries: response.data };
+      this.cache["ALLSELECTED"] = allSelected // keep all selected status in cache
+      return { entries: response.data, allSelected : allSelected, batchStatus : oneSelected ? "" : "disabled" };
     }
     return { error: game.i18n.localize("ERROR.tlbcServerUnreachable") }
   }
@@ -450,12 +460,29 @@ class LetsContributeReview extends FormApplication {
   activateListeners(html) {
     super.activateListeners(html);
     html.find(".controls a").click(this._onControl.bind(this));
+    html.find(".selected a").click(this._onSelect.bind(this));
+    html.find(".actionsSelected button").click(this._onBatch.bind(this));        
+  }
+  
+  async _onSelect(event) {
+    event.preventDefault();
+    const a = event.currentTarget;
+    const entryId = a.closest(".item").dataset.entry;
+    if(entryId == "all") {
+      this.cache["DATA"].data.forEach( el => this.selected[el.id] = !this.cache["ALLSELECTED"] )
+    }
+    else {
+      this.selected[entryId] = entryId in this.selected ? !this.selected[entryId] : true
+    }
+    this.useDataInCache = true
+    this.render()
   }
   
   async _onControl(event) {
     event.preventDefault();
     const a = event.currentTarget;
     const entryId = a.closest(".item").dataset.entry;
+    
     const entryName = a.closest(".item").dataset.name;
     let initiativeId = a.closest(".item").dataset.initiative;
     const window = this
@@ -622,6 +649,139 @@ class LetsContributeReview extends FormApplication {
             console.log("Data Toolbox | Unexpected response", response)
             ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
           }
+        },
+        no: () => {}
+      });
+    }
+  }
+  
+  async _onBatch(event) {
+    event.preventDefault();
+    const b = event.currentTarget;
+    const data = this.cache["DATA"].data
+    const selected = this.selected
+    const window = this
+    
+    // authentification required!
+    let client = new LetsContributeClient()
+    if(! await client.login()) {
+      return;
+    }
+    
+    if (b.classList.contains("import")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.importAllTitle"),
+        content: game.i18n.format("tblc.importAllContent"),
+        yes: async function() {
+          ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
+          ui.sidebar.activateTab("items");
+          for( let d of data) {
+            if(d.id in selected && selected[d.id]) {
+              let response = await client.get(`/item/${d.id}`)
+              if( response.status == 200 ) {
+                let objectToCreate = null
+                // prepare data to import
+                let data = response.data
+                let match = await LetsContribute.findEntityInCompendium(data.compendium, data.data.name)
+                let initiativeId = match ? d.initiativeId : null
+                
+                if(data.type == "journal") { delete data.type }
+                
+                // retrieve initiative (if any)
+                let filter = null
+                if(initiativeId) {
+                  const response = await client.get('/initiatives/' + data.compendium)
+                  if (response && response.status == 200) {
+                    const initiative = response.data.find( i => i.id == initiativeId )
+                    if(initiative) filter = initiative.paths
+                  }
+                }
+                
+                // merge existing with submited based on initiative filters
+                if(filter && filter.length > 0) {
+                  const pack = game.packs.get(data.compendium);
+                  const source = await pack.getEntity(match._id)
+                  source = duplicate(source.data)
+                  delete source._id
+                  let filterObj = {}
+                  filter.split(',').forEach( f => { filterObj[f] = "" } )
+                  filterObj = expandObject(filterObj)
+                  let contribution = filterObject(response.data.data, filterObj)
+                  objectToCreate = mergeObject(source, contribution)
+                } else {
+                  objectToCreate = duplicate( response.data.data );
+                  if( objectToCreate._id ) { delete objectToCreate._id; }
+                }
+                await Item.create(objectToCreate)
+              } else {
+                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
+                  ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+              }
+            }
+          }
+        },
+        no: () => {}
+      });
+    } 
+    else if (b.classList.contains("accept")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.acceptAllTitle"),
+        content: game.i18n.format("tblc.acceptAllContent"),
+        yes: async function() {
+          ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
+          for( let d of data) {
+            if(d.id in selected && selected[d.id]) {
+              console.log(`Data Toolbox | Accepting '${d.name}'`)
+              let response = await client.put(`/item/${d.id}/accept`)
+              if( !response || response.status != 200 ) {
+                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
+                ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+              }
+            }
+          }
+          window.render()
+        },
+        no: () => {}
+      });
+    }
+    else if (b.classList.contains("reject")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.rejectAllTitle"),
+        content: game.i18n.format("tblc.rejectAllContent"),
+        yes: async function() {
+          ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
+          for( let d of data) {
+            if(d.id in selected && selected[d.id]) {
+              console.log(`Data Toolbox | Rejecting '${d.name}'`)
+              let response = await client.put(`/item/${d.id}/reject`)
+              if( !response || response.status != 200 ) {
+                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
+                ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+              }
+            }
+          }
+          window.render()
+        },
+        no: () => {}
+      });
+    }
+    else if (b.classList.contains("delete")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.deleteAllTitle"),
+        content: game.i18n.format("tblc.deleteAllContent"),
+        yes: async function() {
+          ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
+          for( let d of data) {
+            if(d.id in selected && selected[d.id]) {
+              console.log(`Data Toolbox | Deleting '${d.name}'`)
+              let response = await client.delete(`/item/${d.id}`)
+              if( !response || response.status != 200 ) {
+                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
+                ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+              }
+            }
+          }
+          window.render()
         },
         no: () => {}
       });

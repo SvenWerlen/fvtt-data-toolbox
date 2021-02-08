@@ -61,6 +61,7 @@
     "tblc.msgMergeSuccess": "{entryName} has been successfully merged!",
     "tblc.msgInitiativesError": "Couldn't retrieve initiatives ({code})!",
     "tblc.msgPreparingReviewUI": "Preparing the review UI ... please wait!!",
+    "tblc.msgProcessing": "Processing the selected entries... please wait!!",
     
     "tblc.acceptTitle": "Accept contribution",
     "tblc.acceptContent": "Are you sure you want to mark <i>{name}</i> as <b>accepted</b>? The entry will disappear from the list.",
@@ -86,6 +87,24 @@
     "tblc.compareTitle": "Compare contribution with source from compendium",
     "tblc.compareInfo": "Compare the changes between the submitted entry (left) and the source from the compendium (right).",
     
+    "tblc.actionOnSelected": "Batch actions on selected : ",
+    "tblc.select": "Click to select/unselect",
+    "tblc.import": "Import",
+    "tblc.accept": "Accept",
+    "tblc.reject": "Reject",
+    "tblc.delete": "Delete",
+    
+    "tblc.importAllTitle": "Import selected",
+    "tblc.importAllContent": "Are you sure you want to import all selected entries ?",
+    
+    "tblc.acceptAllTitle": "Accept selected",
+    "tblc.acceptAllContent": "Are you sure you want to mark all selected as <b>accepted</b>? The entries will disappear from the list.",
+    
+    "tblc.rejectAllTitle": "Reject selected",
+    "tblc.rejectAllContent": "Are you sure you want to mark all selected as <b>rejected</b>? The entries will disappear from the list.",
+    
+    "tblc.deleteAllTitle": "Delete selected",
+    "tblc.deleteAllContent": "Are you sure you want to delete all selected? Data will be lost!",
     
     "tblc.END": ""
     

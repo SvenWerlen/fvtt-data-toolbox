@@ -61,6 +61,7 @@
     "tblc.msgMergeSuccess": "{entryName} a été intégré avec succès!",
     "tblc.msgInitiativesError": "Initiatives n'ont pas pu être récupérées ({code})!",
     "tblc.msgPreparingReviewUI": "Préparation de l'interface de révision... veuillez patienter!!",
+    "tblc.msgProcessing": "Traitement des contributions sélectionnées... veuillez patienter!!",
     
     "tblc.acceptTitle": "Accepter la contribution",
     "tblc.acceptContent": "Êtes-vous sûr(e) de vouloir marquer <i>{name}</i> comme <b>accepté</b>? L'entrée disparaîtra de la liste.",
@@ -86,6 +87,24 @@
     "tblc.compareTitle": "Comparer la contribution avec l'original",
     "tblc.compareInfo": "Comparer l'entrée soumise (à gauche) avec la source du compendium (à droite).",
     
+    "tblc.actionOnSelected": "Action en lot (sélection) : ",
+    "tblc.select": "Cliquer pour (de-)sélectionner",
+    "tblc.import": "Importer",
+    "tblc.accept": "Accepter",
+    "tblc.reject": "Rejeter",
+    "tblc.delete": "Supprimer",
+    
+    "tblc.importAllTitle": "Importer sélectionnée(s)",
+    "tblc.importAllContent": "Êtes-vous sûr(e) de vouloir importer toutes les contributions sélectionnées ?",
+    
+    "tblc.acceptAllTitle": "Accepter sélectionnée(s)",
+    "tblc.acceptAllContent": "Êtes-vous sûr(e) de vouloir marquer toutes les contibutions sélectionnées comme <b>accepté</b>? Les entrées disparaîtront de la liste.",
+    
+    "tblc.rejectAllTitle": "Rejeter sélectionnée(s)",
+    "tblc.rejectAllContent": "Êtes-vous sûr(e) de vouloir marquer toutes les contibutions sélectionnées comme <b>refusé</b>? Les entrées disparaîtront de la liste.",
+    
+    "tblc.deleteAllTitle": "Supprimer sélectionnée(s)",
+    "tblc.deleteAllContent": "Êtes-vous sûr(e) de vouloir supprimer toutes les contributions sélectionnées? Les données seront perdues!",
     
     "tblc.END": ""
     

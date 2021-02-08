@@ -8,7 +8,18 @@
   {{/if}}
   {{#unless error}}
   <ol class="item-list">
-    <li class="item flexrow">
+    <li class="item flexrow" data-entry="all">
+      <div class="selected">
+        <a class="control select" title="{{localize "tblc.select"}}">
+          {{#if allSelected}}
+          <i class="far fa-check-square"></i>
+          {{/if}}
+          {{#unless allSelected}}
+            <i class="far fa-square"></i>
+          {{/unless}}
+        </a>
+      </div>
+      
       <div class="name">
         <h4>{{localize "tblc.item"}}</h4>
       </div>
@@ -39,6 +50,17 @@
     </li>
     {{#each entries as |entry|}}
     <li class="item flexrow" data-entry="{{entry.id}}" data-name="{{entry.name}}" data-initiative="{{entry.initiativeId}}">
+      <div class="selected">
+        <a class="control select" title="{{localize "tblc.select"}}">
+          {{#if entry.selected}}
+            <i class="far fa-check-square"></i>
+          {{/if}}
+          {{#unless entry.selected}}
+            <i class="far fa-square"></i>
+          {{/unless}}
+        </a>
+      </div>
+      
       <div class="name">
         {{entry.name}}
       </div>
@@ -100,5 +122,20 @@
     </li>
     {{/each}}
   </ol>
+  <div class="actionsSelected flexrow">
+    <p>{{localize "tblc.actionOnSelected"}}</p>
+    <button class="dialog-button import" data-button="import" {{ batchStatus }}>
+      <i class="fas fa-download"></i>{{localize "tblc.import"}}
+    </button>
+    <button class="dialog-button accept" data-button="accept" {{ batchStatus }}>
+      <i class="fas fa-thumbs-up"></i>{{localize "tblc.accept"}}
+    </button>
+    <button class="dialog-button reject" data-button="reject" {{ batchStatus }}>
+      <i class="fas fa-thumbs-down"></i>{{localize "tblc.reject"}}
+    </button>
+    <button class="dialog-button delete" data-button="delete" {{ batchStatus }}>
+      <i class="fas fa-trash"></i>{{localize "tblc.delete"}}
+    </button>
+  </div>
   {{/unless}}
 </form>
