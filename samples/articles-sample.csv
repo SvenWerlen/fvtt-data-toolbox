@@ -1,4 +1,4 @@
 Name,Content
 "This is an article","<p>Content of the article<br/>Second line\n</p>"
 "Second article","<p>Content of the article<br/><b>Some formatting</b></p>"
-"Third article","<p>Content of the article<br/><i>Some other formatting</i></p>"
+"Third article","<p>Content of the article<br/><i>""With double-quotes""</i></p>"

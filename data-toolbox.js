@@ -165,7 +165,7 @@ class GenerateCompendiumDialog extends Dialog {
               }
             }
             else {
-              data[i][f] = data[i][f].replace(/\n/g, "\\n").replace(/\r/g, "") //JSON.stringify(data[i][f])
+              data[i][f] = data[i][f].replace(/\n/g, "\\n").replace(/\r/g, "").replace(/\"/g, "\\\"") //JSON.stringify(data[i][f])
             }
           }
           //console.log(data[i])

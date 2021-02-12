@@ -10,6 +10,10 @@
   border-radius: 0 4px 0 0;
 }
 
+.datatoolbox select {
+  padding: 0;
+}
+
 .dtb .error {
   color: red;
 }
