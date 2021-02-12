@@ -16,6 +16,7 @@
     "tb.entityType": "Entity type",
     "tb.actor": "Actor",
     "tb.item": "Item",
+    "tb.journal": "JournalArticle",
     "tb.compendiumName": "Compendium name",
     
     "tb.processStarted": "Process started. Please wait ... it could take minutes!!",

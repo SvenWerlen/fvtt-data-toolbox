@@ -58,7 +58,7 @@ class GenerateCompendiumDialog extends Dialog {
     let entity = html.find('select[name="entity"]').val();
     let compendiumName = html.find('input[name="compendium"]').val();
     
-    if (entity != "Actor" && entity != "Item") {
+    if (entity != "Actor" && entity != "Item" && entity != "JournalEntry") {
       ui.notifications.error(game.i18n.localize("ERROR.tbInvalidEntity"));
       return;
     }
@@ -235,6 +235,7 @@ function dtShowToolbox() {
       template: game.settings.get("data-toolbox", "template"),
       itemSelected: game.settings.get("data-toolbox", "entity") === "Item" ? "selected" : "",
       actorSelected: game.settings.get("data-toolbox", "entity") === "Actor" ? "selected" : "",
+      journalSelected: game.settings.get("data-toolbox", "entity") === "JournalEntry" ? "selected" : "",
       compendium: game.settings.get("data-toolbox", "compendium")
     }).then(html => { (new GenerateCompendiumDialog(null, {html: html})).render(true); }
   );
