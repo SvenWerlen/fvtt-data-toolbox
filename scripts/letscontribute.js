@@ -560,7 +560,7 @@ class LetsContributeReview extends FormApplication {
         
         if(filter && filter.length > 0) {
           const pack = game.packs.get(data.compendium);
-          const source = await pack.getEntity(match._id)
+          let source = await pack.getEntity(match._id)
           source = duplicate(source.data)
           delete source._id
           let filterObj = {}
