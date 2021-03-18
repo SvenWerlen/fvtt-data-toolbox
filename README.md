@@ -15,3 +15,9 @@ To **manually install** the module, follow these instructions:
 1. Start FVTT and browse to the Game Modules tab in the Configuration and Setup menu
 2. Select the Install Module button and enter the following URL: https://raw.githubusercontent.com/svenwerlen/fvtt-data-toolbox/master/module.json
 3. Click Install and wait for installation to complete 
+
+## Support me on Patreon
+
+If you like my work and want to support me, consider becoming a patreon and check my [other modules](https://github.com/SvenWerlen/moulinette)!
+
+[https://www.patreon.com/moulinette](https://www.patreon.com/moulinette)
