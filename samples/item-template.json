@@ -1,0 +1,29 @@
+{
+  "name": "{{title}}",
+  "type": "loot",
+  "data": {
+    "description": {
+      "value": "{{description}}",
+      "chat": "",
+      "unidentified": ""
+    },
+    "source": "Data toolbox",
+    "quantity": {{qty}},
+    "weight": {{weight}},
+    "price": {{price}},
+    "attuned": false,
+    "attunement": 0,
+    "equipped": false,
+    "rarity": "{{rarity}}",
+    "identified": true,
+    "attributes": {
+      "spelldc": 10
+    },
+    "damage": {
+      "parts": []
+    }
+  },
+  "sort": 100001,
+  "img": "icons/svg/mystery-man.svg",
+  "effects": []
+}

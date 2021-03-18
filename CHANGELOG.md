@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2020-03-17
+### Added
+- Sample for importing items (#11 Missing item-template and items-sample)
+
 ## [1.6.1] - 2020-02-21
 ### Fixed
 - Let's Contribute : cannot import contribution anymore

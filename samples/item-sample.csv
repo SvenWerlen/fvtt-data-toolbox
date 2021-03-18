@@ -1,0 +1,4 @@
+title,description,weight,qty,price,rarity
+Item #1,item description, 2.0, 1, 50, Common
+Item #2,"<p>item description with <b>formating</b></p>", 12.0, 3, 150, Rare
+Item #3,"you got the idea. Check the CSV file", 1, 1, 1, Common
