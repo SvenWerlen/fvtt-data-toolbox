@@ -72,6 +72,13 @@
     "tblc.deleteContent": "Are you sure you want to delete <i>{name}</i>? Data will be lost!",
     
     "tblc.validate": "Validate",
+    
+    "tblc.new": "New",
+    "tblc.accepted": "Accepted",
+    "tblc.rejected": "Rejected",
+    "tblc.archived": "Archived",
+    "tblc.noEntry": "No entry found with the selected status",
+    "tblc.loading": "Loading...",
 
     "SETTINGS.tblcLogin": "(Let's contribute) Screenname",
     "SETTINGS.tblcLoginHint": "If you are a reviewer, specify the screenname used for authentication on Let's contribute server (See project documentation for more information).",

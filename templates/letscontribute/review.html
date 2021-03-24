@@ -7,17 +7,18 @@
   <div class="error">{{error}}</div>
   {{/if}}
   {{#unless error}}
+  
+  <nav class="sheet-tabs tabs">
+    <a class="item {{#if newActive}}active{{/if}}" data-tab="new"><i class="fas fa-star"></i> {{localize "tblc.new"}}</a>
+    <a class="item {{#if acceptedActive}}active{{/if}}" data-tab="accepted"><i class="fas fa-thumbs-up"></i> {{localize "tblc.accepted"}}</a>
+    <a class="item {{#if rejectedActive}}active{{/if}}" data-tab="rejected"><i class="fas fa-thumbs-down"></i> {{localize "tblc.rejected"}}</a>
+    <a class="item {{#if archivedActive}}active{{/if}}" data-tab="archived"><i class="fas fa-archive"></i> {{localize "tblc.archived"}}</a>
+  </nav>
+  
   <ol class="item-list">
     <li class="item flexrow" data-entry="all">
       <div class="selected">
-        <a class="control select" title="{{localize "tblc.select"}}">
-          {{#if allSelected}}
-          <i class="far fa-check-square"></i>
-          {{/if}}
-          {{#unless allSelected}}
-            <i class="far fa-square"></i>
-          {{/unless}}
-        </a>
+        <a class="control select" title="{{localize "tblc.select"}}"><i class="far fa-square"></i></a>
       </div>
       
       <div class="name">
@@ -48,17 +49,13 @@
         <h4>{{localize "tblc.actions"}}</h4>
       </div>
     </li>
+    {{#unless entries.length}}
+      <em>{{localize "tblc.noEntry"}}</em>
+    {{/unless}}
     {{#each entries as |entry|}}
     <li class="item flexrow" data-entry="{{entry.id}}" data-name="{{entry.name}}" data-initiative="{{entry.initiativeId}}">
       <div class="selected">
-        <a class="control select" title="{{localize "tblc.select"}}">
-          {{#if entry.selected}}
-            <i class="far fa-check-square"></i>
-          {{/if}}
-          {{#unless entry.selected}}
-            <i class="far fa-square"></i>
-          {{/unless}}
-        </a>
+        <a class="control select" title="{{localize "tblc.select"}}"><i class="far fa-square"></i></a>
       </div>
       
       <div class="name">
@@ -104,17 +101,19 @@
         <a class="control import" title="{{localize "tblc.actionImport"}}">
           <i class="fas fa-download"></i>
         </a>
-        {{#unless entry.found}}
         <a class="control merge" title="{{localize "tblc.actionMerge"}}">
           <i class="fas fa-atlas"></i>
         </a>
-        {{/unless}}
+        {{#unless ../acceptedActive}}
         <a class="control accept" title="{{localize "tblc.actionAccept"}}">
           <i class="fas fa-thumbs-up"></i>
         </a>
+        {{/unless}}
+        {{#unless ../rejectedActive}}
         <a class="control reject" title="{{localize "tblc.actionReject"}}">
           <i class="fas fa-thumbs-down"></i>
         </a>
+        {{/unless}}
         <a class="control delete" title="{{localize "tblc.actionDelete"}}">
           <i class="fas fa-trash"></i>
         </a>
@@ -124,16 +123,16 @@
   </ol>
   <div class="actionsSelected flexrow">
     <p>{{localize "tblc.actionOnSelected"}}</p>
-    <button class="dialog-button import" data-button="import" {{ batchStatus }}>
+    <button class="dialog-button import" data-button="import" disabled>
       <i class="fas fa-download"></i>{{localize "tblc.import"}}
     </button>
-    <button class="dialog-button accept" data-button="accept" {{ batchStatus }}>
+    <button class="dialog-button accept" data-button="accept" disabled>
       <i class="fas fa-thumbs-up"></i>{{localize "tblc.accept"}}
     </button>
-    <button class="dialog-button reject" data-button="reject" {{ batchStatus }}>
+    <button class="dialog-button reject" data-button="reject" disabled>
       <i class="fas fa-thumbs-down"></i>{{localize "tblc.reject"}}
     </button>
-    <button class="dialog-button delete" data-button="delete" {{ batchStatus }}>
+    <button class="dialog-button delete" data-button="delete" disabled>
       <i class="fas fa-trash"></i>{{localize "tblc.delete"}}
     </button>
   </div>

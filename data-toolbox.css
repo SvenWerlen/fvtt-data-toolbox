@@ -18,6 +18,19 @@
   color: red;
 }
 
+.dtb .tabs {
+  border-bottom: 1px solid #000;
+  margin-bottom: 10px;
+  padding-bottom: 3px;
+  font-size: large;
+}
+
+.dtb .item-list {
+  border-bottom: 1px solid #000;
+  margin-bottom: 10px;
+  padding-bottom: 3px;
+}
+
 .dtb.submit .description {
   font-size: smaller;
   font-style: italic;
@@ -69,8 +82,9 @@
 }
 
 .dtb.review ol.item-list .controls {
-  flex: 0 0 100px;
+  flex: 0 0 105px;
   padding: 0 1px 0 1px;
+  text-align: right;
 }
 
 .dtb.review ol.item-list .controls a {

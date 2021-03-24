@@ -148,6 +148,23 @@ class LetsContribute {
     await pack.getIndex();
     return pack.index.find(e => e.name === entityName);
   };
+  
+  /**
+   * Returns a list of compendiums with all preloaded indexes
+   */
+  static async buildEntityIndexes() {
+    SceneNavigation._onLoadProgress(game.i18n.localize("tblc.loading"), 0);  
+    let indexes = {}
+    let idx = 0;
+    for(const key of game.packs.keys()) {
+      idx++
+      if(key.startsWith('world')) continue; // ignore local world compendiums
+      indexes[key] = await game.packs.get(key).getIndex();
+      SceneNavigation._onLoadProgress(game.i18n.localize("tblc.loading"), Math.round((idx / game.packs.size)*100));  
+    }
+    SceneNavigation._onLoadProgress(game.i18n.localize("tblc.loading"), 100);
+    return indexes;
+  }
 
   /**
    * Returns the entity matching the given name by searching in the specified compendium
@@ -400,6 +417,13 @@ class LetsContributeChooseCompendium extends FormApplication {
  *************************/
 class LetsContributeReview extends FormApplication {
   
+  constructor() {
+    super()
+    this.tab = "new"
+  }
+  
+  static get TABS() { return ["new", "accepted", "rejected", "archived"] }
+  
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
       id: "letscontributereview",
@@ -414,69 +438,89 @@ class LetsContributeReview extends FormApplication {
   }
   
   async getData() {
+    
+    // determine which tab is active
+    let data = { newActive: this.tab == "new", acceptedActive: this.tab == "accepted" , rejectedActive: this.tab == "rejected", archivedActive: this.tab == "archived" }
+    
+    // user must be a GM
     if (!game.user.isGM) {
-      return { error: game.i18n.localize("ERROR.tlbcGMOnly") }
-    }
-    if (!game.settings.get("data-toolbox", "lcLogin") || !game.settings.get("data-toolbox", "lcAccessKey")) {
-      return { error: game.i18n.localize("ERROR.tlbcConfigurationMissing") }
+      return { ...data, error: game.i18n.localize("ERROR.tlbcGMOnly") }
     }
     
-    let client = new LetsContributeClient()
-    if( !this.useDataInCache && ! await client.login() ) {
-      return { error: game.i18n.localize("ERROR.tlbcNoRights") }
+    // authentification is required
+    if (!game.settings.get("data-toolbox", "lcLogin") || !game.settings.get("data-toolbox", "lcAccessKey")) {
+      return { ...data, error: game.i18n.localize("ERROR.tlbcConfigurationMissing") }
     }
-    if(!this.cache) this.cache = {}
-    if(!this.selected) this.selected = {}
-    const response = this.useDataInCache ? this.cache["DATA"] : await client.get('/items')
-    this.cache["DATA"] = response
-    this.useDataInCache = false
-    let allSelected = true
-    let oneSelected = false
+    
+    // load compendium cache
+    if(!this.cache) {
+      this.cache = await LetsContribute.buildEntityIndexes();
+    }
+    
+    // get the list from server
+    let client = new LetsContributeClient()
+    if( ! await client.login() ) {
+      return { ...data, error: game.i18n.localize("ERROR.tlbcNoRights") }
+    }
+    const response = await client.get('/items' + (this.tab == "new" ? "" : `/${this.tab}`))
     if( response && response.status == 200 ) {
       for(let i = 0; i<response.data.length; i++) {
-        const id = response.data[i].id
-        const key = `${response.data[i].compendium}#${response.data[i].name}`
-        response.data[i].selected = id in this.selected ? this.selected[id] : false
-        if(!response.data[i].selected) allSelected = false // at least 1 entry is not selected => uncheck all selected box
-        if(response.data[i].selected) oneSelected = true   // at least 1 entry is selected
-        if( key in this.cache ) {
-          response.data[i].found = this.cache[key]
-        } else {
-          console.log(`LetsContribute | Looking for ${response.data[i].name} in compendium ${response.data[i].compendium}`)
-          let match = await LetsContribute.findEntityInCompendium(response.data[i].compendium, response.data[i].name)
-          if(match) {
-            response.data[i].found = true
-          }
-          this.cache[key] = match != null
+        if( this.cache[response.data[i].compendium] && this.cache[response.data[i].compendium].find( el => el.name == response.data[i].name )) {
+          response.data[i].found = true
         }
       }
-      
-      this.cache["ALLSELECTED"] = allSelected // keep all selected status in cache
-      return { entries: response.data, allSelected : allSelected, batchStatus : oneSelected ? "" : "disabled" };
+      return { ...data, entries: response.data };
     }
-    return { error: game.i18n.localize("ERROR.tlbcServerUnreachable") }
+    return { ...data, error: game.i18n.localize("ERROR.tlbcServerUnreachable") }
   }
 
+  
   activateListeners(html) {
     super.activateListeners(html);
     html.find(".controls a").click(this._onControl.bind(this));
     html.find(".selected a").click(this._onSelect.bind(this));
     html.find(".actionsSelected button").click(this._onBatch.bind(this));        
+    
+    // click on tabs
+    html.find(".tabs a").click(this._onNavigate.bind(this));
+    
+    // keep html
+    this.html = html
   }
+  
   
   async _onSelect(event) {
     event.preventDefault();
     const a = event.currentTarget;
     const entryId = a.closest(".item").dataset.entry;
+    
+    // toggle check status
+    const isChecked = $(a).children().first().hasClass("fa-check-square")
+    $(a).html(`<i class="far fa${!isChecked ? '-check' : ''}-square"></i>`)
+     
+    // (un)select all ?
     if(entryId == "all") {
-      this.cache["DATA"].data.forEach( el => this.selected[el.id] = !this.cache["ALLSELECTED"] )
+      this.html.find(".selected a").each( function () { $(this).html(`<i class="far fa${!isChecked ? '-check' : ''}-square"></i>`) } )
     }
-    else {
-      this.selected[entryId] = entryId in this.selected ? !this.selected[entryId] : true
-    }
-    this.useDataInCache = true
-    this.render()
+    
+    // enable/disable batch buttons
+    let checkedCount = this.html.find(".selected a .fa-check-square").length
+    if(entryId == "all" && !isChecked) checkedCount--; // ignore "all" check
+    this.html.find(".actionsSelected button").each( function () { $(this).attr("disabled", checkedCount == 0); })
   }
+  
+  
+  _onNavigate(event) {
+    event.preventDefault();
+    const source = event.currentTarget;
+    const tab = source.dataset.tab;
+    this.selected = {}
+    if(LetsContributeReview.TABS.includes(tab)) {
+      this.tab = tab;
+      this.render();
+    }
+  }
+  
   
   async _onControl(event) {
     event.preventDefault();
@@ -495,11 +539,9 @@ class LetsContributeReview extends FormApplication {
     
     if (a.classList.contains("compare")) {
       let response = await client.get(`/item/${entryId}`)
-      console.log(response)
       if( response.status == 200 ) {
-        ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
         let data = response.data
-        let match = await LetsContribute.findEntityInCompendium(data.compendium, data.data.name)
+        let match = this.cache[data.compendium] ? this.cache[data.compendium].find( el => el.name == data.data.name ) : null
         if( !match ) {
           ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
           return
@@ -539,10 +581,8 @@ class LetsContributeReview extends FormApplication {
       let response = await client.get(`/item/${entryId}`)
       if( response.status == 200 ) {
         let objectToCreate = null
-        // prepare data to import
-        ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
         let data = response.data
-        let match = await LetsContribute.findEntityInCompendium(data.compendium, data.data.name)
+        let match = this.cache[data.compendium] ? this.cache[data.compendium].find( el => el.name == data.data.name ) : null
         if( !match ) {
           initiativeId = null
         }
@@ -658,8 +698,6 @@ class LetsContributeReview extends FormApplication {
   async _onBatch(event) {
     event.preventDefault();
     const b = event.currentTarget;
-    const data = this.cache["DATA"].data
-    const selected = this.selected
     const window = this
     
     // authentification required!
@@ -667,6 +705,10 @@ class LetsContributeReview extends FormApplication {
     if(! await client.login()) {
       return;
     }
+    
+    const checked = $.map( this.html.find(".selected a .fa-check-square"), function(el) { return $(el).closest(".item")[0].dataset.entry } ) // why closest returns an array ???
+    console.log(checked)
+    return;
     
     if (b.classList.contains("import")) {
       Dialog.confirm({
