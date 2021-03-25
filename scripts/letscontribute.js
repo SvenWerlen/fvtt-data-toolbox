@@ -103,13 +103,8 @@ class LetsContribute {
       // retrieve pack entry matching name (there is not referenced ID?)
       ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
       let match = await LetsContribute.getSearchEntryFromName(entity.name, this.type)
-
-      if(!match) {
-        ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"))
-        return
-      }
       
-      new LetsContributeSubmit({ entity: entity, compendium: match.compendium, system: game.system }).render(true);
+      new LetsContributeSubmit({ entity: entity, compendium: match ? match.compendium : null, system: game.system }).render(true);
 
     }, false);
   }
@@ -136,17 +131,6 @@ class LetsContribute {
     } else {
       return null;
     }
-  };
-  
-  /**
-   * Returns the entity matching the given name by searching in all compendiums
-   * @return { entity, compendium } or null if not found
-   */
-  static async findEntityInCompendium(compendiumName, entityName) {
-    const pack = game.packs.get(compendiumName);
-    if(!pack) { return null; }
-    await pack.getIndex();
-    return pack.index.find(e => e.name === entityName);
   };
   
   /**
@@ -181,6 +165,51 @@ class LetsContribute {
       return null;
     }
   };
+  
+  /**
+   * Returns the new merged entry (duplicate)
+   */
+  static async getMergedEntry(client, cache, entryId, initiativeId) {
+    let response = await client.get(`/item/${entryId}`)
+    if( response.status != 200 ) return null;
+    
+    let data = response.data
+    let match = cache[data.compendium] ? cache[data.compendium].find( el => el.name == data.data.name ) : null
+    
+    // no match => return entry "as is"
+    if( !match ) {
+      const newEntry = duplicate(data.data)
+      delete newEntry._id
+      return newEntry
+    }
+    // match => check if initiative exist
+    let filter = null
+    if(initiativeId) {
+      const response = await client.get('/initiatives/' + data.compendium)
+      if (response && response.status == 200) {
+        response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
+      }
+    }
+    
+    const pack = game.packs.get(data.compendium);
+    let source = await pack.getEntity(match._id)
+    source = duplicate(source.data)
+    const origId = source._id;
+    delete source._id
+      
+    let objectToCreate = null
+    if(filter && filter.length > 0) {
+      let filterObj = {}
+      filter.split(',').forEach( f => { filterObj[f] = "" } )
+      filterObj = expandObject(filterObj)
+      let contribution = filterObject(response.data.data, filterObj)
+      objectToCreate = mergeObject(source, contribution)
+    } else {
+      objectToCreate = duplicate( response.data.data );
+    }
+    objectToCreate._id = origId
+    return objectToCreate
+  }
   
   /**
    * Returns the entity based on the give type
@@ -251,13 +280,17 @@ class LetsContributeSubmit extends FormApplication {
     // retrieve initiatives
     if(!this.data.initiatives) {
       let client = new LetsContributeClient()
-      const response = await client.get('/initiatives/' + this.data.compendium.collection)
-      if (!response || response.status != 200) {                  
-        console.log("Error during submit: ", response ? response : "server unreachable")
-        let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
-        ui.notifications.error(game.i18n.format("tblc.msgInitiativesError", { code: code}));
+      if(this.data.compendium) {
+        const response = await client.get('/initiatives/' + this.data.compendium.collection)
+        if (!response || response.status != 200) {                  
+          console.log("Error during submit: ", response ? response : "server unreachable")
+          let code = response ? response.status : game.i18n.localize("ERROR.tlbcServerUnreachable")
+          ui.notifications.error(game.i18n.format("tblc.msgInitiativesError", { code: code}));
+        } else {
+          this.data.initiatives = response.data
+        }
       } else {
-        this.data.initiatives = response.data
+        this.data.initiatives = []
       }
     }
     // append additional details
@@ -285,6 +318,12 @@ class LetsContributeSubmit extends FormApplication {
     event.preventDefault();
     const source = event.currentTarget;
     if (source.classList.contains("dialog-button")) {
+      // check if compendium has been selected
+      if(!this.data.compendium) {
+        ui.notifications.error(game.i18n.localize("ERROR.tlbcNoCompendiumChosen"))
+        return;
+      }
+      
       let data = {
         compendium: this.data.compendium.collection,
         system: this.data.system.id,
@@ -392,13 +431,6 @@ class LetsContributeChooseCompendium extends FormApplication {
     const source = event.currentTarget;
     // user validate their compendium choice
     if (source.classList.contains("dialog-button")) {
-      let match = await LetsContribute.getSearchEntryFromNameAndCompendium(this.data.entity.name, this.data.selCompendium);
-      
-      if(!match) {
-        ui.notifications.error(game.i18n.localize("ERROR.tlbcNoMatch"));
-        return;
-      }
-
       new LetsContributeSubmit({ entity: this.data.entity, compendium: game.packs.get(this.data.selCompendium), system: game.system }).render(true);
       this.close();
     }
@@ -432,6 +464,7 @@ class LetsContributeReview extends FormApplication {
       template: "modules/data-toolbox/templates/letscontribute/review.html",
       width: 1100,
       height: "auto",
+      resizable: true,
       closeOnSubmit: false,
       submitOnClose: false,
     });
@@ -578,40 +611,9 @@ class LetsContributeReview extends FormApplication {
       }
     }
     else if (a.classList.contains("import")) {
-      let response = await client.get(`/item/${entryId}`)
-      if( response.status == 200 ) {
-        let objectToCreate = null
-        let data = response.data
-        let match = this.cache[data.compendium] ? this.cache[data.compendium].find( el => el.name == data.data.name ) : null
-        if( !match ) {
-          initiativeId = null
-        }
-        if(data.type == "journal") { delete data.type }
-        
-        // retrieve initiative (if any)
-        let filter = null
-        if(initiativeId) {
-          const response = await client.get('/initiatives/' + data.compendium)
-          if (response && response.status == 200) {
-            response.data.forEach( i => { if(i.id == initiativeId) { filter = i.paths } })
-          }
-          
-        }
-        
-        if(filter && filter.length > 0) {
-          const pack = game.packs.get(data.compendium);
-          let source = await pack.getEntity(match._id)
-          source = duplicate(source.data)
-          delete source._id
-          let filterObj = {}
-          filter.split(',').forEach( f => { filterObj[f] = "" } )
-          filterObj = expandObject(filterObj)
-          let contribution = filterObject(response.data.data, filterObj)
-          objectToCreate = mergeObject(source, contribution)
-        } else {
-          objectToCreate = duplicate( response.data.data );
-          if( objectToCreate._id ) { delete objectToCreate._id; }
-        }
+      let objectToCreate = await LetsContribute.getMergedEntry(client, this.cache, entryId, initiativeId)
+      if( objectToCreate ) {
+        ui.sidebar.activateTab("items");
         await Item.create(objectToCreate)
         ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: objectToCreate.name}));
       } else {
@@ -628,15 +630,32 @@ class LetsContributeReview extends FormApplication {
         let data = response.data
         const pack = game.packs.get(data.compendium);
         if(pack) {
-          let objectToCreate = duplicate( response.data.data );
-          if( objectToCreate._id ) { delete objectToCreate._id; }
-          // create new item
-          let item = await Item.create(objectToCreate)
-          // import into compendium
-          await pack.importEntity(item)
-          // delete temporary item
-          await item.delete()
-          ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: objectToCreate.name}));
+          // unlock compendium (if needed)
+          const isLocked = pack.locked
+          if(isLocked) {
+            await pack.configure({locked: false})
+          }
+          
+          let match = window.cache[data.compendium] ? window.cache[data.compendium].find( el => el.name == data.data.name ) : null
+          let object = await LetsContribute.getMergedEntry(client, this.cache, entryId, initiativeId)
+          if(!match) {
+            // create new item
+            let item = await Item.create(object)
+            // import into compendium
+            await pack.importEntity(item)
+            // delete temporary item
+            await item.delete()
+            ui.notifications.info(game.i18n.format("tblc.msgMergeSuccess", { entryName: objectToCreate.name}));
+          } else {
+            // update item
+            pack.updateEntity(object)
+            ui.notifications.info(game.i18n.format("tblc.msgUpdateSuccess", { entryName: objectToCreate.name}));
+          }
+          
+          // relock compendium (if it was)
+          if(isLocked) {
+            await pack.configure({locked: isLocked})
+          }
         } else {
           console.error("Data Toolbox | Invalid compendium", data.compendium)
         }
@@ -651,6 +670,22 @@ class LetsContributeReview extends FormApplication {
         content: game.i18n.format("tblc.deleteContent", { name: entryName}),
         yes: async function() {
           let response = await client.delete(`/item/${entryId}`)
+          if( response && response.status == 200 ) {
+            window.render()
+          } else {
+            console.log("Data Toolbox | Unexpected response", response)
+            ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+          }
+        },
+        no: () => {}
+      });
+    }
+    else if (a.classList.contains("archive")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.archiveTitle"),
+        content: game.i18n.format("tblc.archiveContent", { name: entryName}),
+        yes: async function() {
+          let response = await client.put(`/item/${entryId}/archive`)
           if( response && response.status == 200 ) {
             window.render()
           } else {
@@ -706,9 +741,10 @@ class LetsContributeReview extends FormApplication {
       return;
     }
     
-    const checked = $.map( this.html.find(".selected a .fa-check-square"), function(el) { return $(el).closest(".item")[0].dataset.entry } ) // why closest returns an array ???
-    console.log(checked)
-    return;
+    const checked = $.map( this.html.find(".selected a .fa-check-square"), function(el) {  // why closest returns an array ???
+      const dataset = $(el).closest(".item")[0].dataset
+      return { id: dataset.entry, initiative: dataset.initiative, name: dataset.name }
+      } ) 
     
     if (b.classList.contains("import")) {
       Dialog.confirm({
@@ -717,68 +753,119 @@ class LetsContributeReview extends FormApplication {
         yes: async function() {
           ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
           ui.sidebar.activateTab("items");
-          for( let d of data) {
-            if(d.id in selected && selected[d.id]) {
-              let response = await client.get(`/item/${d.id}`)
-              if( response.status == 200 ) {
-                let objectToCreate = null
-                // prepare data to import
-                let data = response.data
-                let match = await LetsContribute.findEntityInCompendium(data.compendium, data.data.name)
-                let initiativeId = match ? d.initiativeId : null
-                
-                if(data.type == "journal") { delete data.type }
-                
-                // retrieve initiative (if any)
-                let filter = null
-                if(initiativeId) {
-                  const response = await client.get('/initiatives/' + data.compendium)
-                  if (response && response.status == 200) {
-                    const initiative = response.data.find( i => i.id == initiativeId )
-                    if(initiative) filter = initiative.paths
-                  }
+          
+          for( let entry of checked ) {
+            if(entry.id == "all") continue; // ignore all
+            let response = await client.get(`/item/${entry.id}`)
+            if( response.status == 200 ) {
+              let objectToCreate = null
+              // prepare data to import
+              let data = response.data
+              let match = window.cache[data.compendium] ? window.cache[data.compendium].find( el => el.name == data.data.name ) : null
+              let initiativeId = match ? entry.initiative : null
+              
+              if(data.type == "journal") { delete data.type }
+              
+              // retrieve initiative (if any)
+              let filter = null
+              if(initiativeId) {
+                const response = await client.get('/initiatives/' + data.compendium)
+                if (response && response.status == 200) {
+                  const initiative = response.data.find( i => i.id == initiativeId )
+                  if(initiative) filter = initiative.paths
                 }
-                
-                // merge existing with submited based on initiative filters
-                if(filter && filter.length > 0) {
-                  const pack = game.packs.get(data.compendium);
-                  const source = await pack.getEntity(match._id)
-                  source = duplicate(source.data)
-                  delete source._id
-                  let filterObj = {}
-                  filter.split(',').forEach( f => { filterObj[f] = "" } )
-                  filterObj = expandObject(filterObj)
-                  let contribution = filterObject(response.data.data, filterObj)
-                  objectToCreate = mergeObject(source, contribution)
-                } else {
-                  objectToCreate = duplicate( response.data.data );
-                  if( objectToCreate._id ) { delete objectToCreate._id; }
-                }
-                await Item.create(objectToCreate)
-              } else {
-                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
-                  ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
               }
+              
+              // merge existing with submited based on initiative filters
+              if(filter && filter.length > 0) {
+                const pack = game.packs.get(data.compendium);
+                let source = await pack.getEntity(match._id)
+                source = duplicate(source.data)
+                delete source._id
+                let filterObj = {}
+                filter.split(',').forEach( f => { filterObj[f] = "" } )
+                filterObj = expandObject(filterObj)
+                let contribution = filterObject(response.data.data, filterObj)
+                objectToCreate = mergeObject(source, contribution)
+              } else {
+                objectToCreate = duplicate( response.data.data );
+                if( objectToCreate._id ) { delete objectToCreate._id; }
+              }
+              await Item.create(objectToCreate)
+            } else {
+              console.log(`Data Toolbox | Unexpected response for '${entry.name}'`, response)
+                ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
             }
           }
         },
         no: () => {}
       });
     } 
+    else if (b.classList.contains("merge")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.mergeAllTitle"),
+        content: game.i18n.format("tblc.mergeAllContent"),
+        yes: async function() {
+          ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
+          for( let entry of checked ) {
+            let response = await client.get(`/item/${entry.id}`)
+            if( response.status == 200 ) {
+              // prepare data to import
+              let data = response.data
+              const pack = game.packs.get(data.compendium);
+              if(pack) {
+                // unlock compendium (if needed)
+                const isLocked = pack.locked
+                if(isLocked) {
+                  await pack.configure({locked: false})
+                }
+                
+                let match = window.cache[data.compendium] ? window.cache[data.compendium].find( el => el.name == data.data.name ) : null
+                let initiativeId = match ? entry.initiative : null
+                let object = await LetsContribute.getMergedEntry(client, window.cache, entry.id, initiativeId)
+                if(!match) {
+                  // create new item
+                  let item = await Item.create(object)
+                  // import into compendium
+                  await pack.importEntity(item)
+                  // delete temporary item
+                  await item.delete()
+                  ui.notifications.info(game.i18n.format("tblc.msgMergeSuccess", { entryName: object.name}));
+                } else {
+                  // update item
+                  pack.updateEntity(object)
+                  ui.notifications.info(game.i18n.format("tblc.msgUpdateSuccess", { entryName: object.name}));
+                }
+                
+                // relock compendium (if it was)
+                if(isLocked) {
+                  await pack.configure({locked: isLocked})
+                }
+              } else {
+                console.error("Data Toolbox | Invalid compendium", data.compendium)
+              }
+            } else {
+              console.log("Data Toolbox | Unexpected response", response)
+              ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+            }
+          }
+        },
+        no: () => {}
+      });
+    }
     else if (b.classList.contains("accept")) {
       Dialog.confirm({
         title: game.i18n.localize("tblc.acceptAllTitle"),
         content: game.i18n.format("tblc.acceptAllContent"),
         yes: async function() {
           ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
-          for( let d of data) {
-            if(d.id in selected && selected[d.id]) {
-              console.log(`Data Toolbox | Accepting '${d.name}'`)
-              let response = await client.put(`/item/${d.id}/accept`)
-              if( !response || response.status != 200 ) {
-                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
-                ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
-              }
+          for( let entry of checked ) {
+            if(entry.id == "all") continue; // ignore all
+            console.log(`Data Toolbox | Accepting '${entry.name}'`)
+            let response = await client.put(`/item/${entry.id}/accept`)
+            if( !response || response.status != 200 ) {
+              console.log(`Data Toolbox | Unexpected response for '${entry.name}'`, response)
+              ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
             }
           }
           window.render()
@@ -792,14 +879,33 @@ class LetsContributeReview extends FormApplication {
         content: game.i18n.format("tblc.rejectAllContent"),
         yes: async function() {
           ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
-          for( let d of data) {
-            if(d.id in selected && selected[d.id]) {
-              console.log(`Data Toolbox | Rejecting '${d.name}'`)
-              let response = await client.put(`/item/${d.id}/reject`)
-              if( !response || response.status != 200 ) {
-                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
-                ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
-              }
+          for( let entry of checked ) {
+            if(entry.id == "all") continue; // ignore all
+            console.log(`Data Toolbox | Rejecting '${entry.name}'`)
+            let response = await client.put(`/item/${entry.id}/reject`)
+            if( !response || response.status != 200 ) {
+              console.log(`Data Toolbox | Unexpected response for '${entry.name}'`, response)
+              ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
+            }
+          }
+          window.render()
+        },
+        no: () => {}
+      });
+    }
+    else if (b.classList.contains("archive")) {
+      Dialog.confirm({
+        title: game.i18n.localize("tblc.archiveAllTitle"),
+        content: game.i18n.format("tblc.archiveAllContent"),
+        yes: async function() {
+          ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
+          for( let entry of checked ) {
+            if(entry.id == "all") continue; // ignore all
+            console.log(`Data Toolbox | Archiving '${entry.name}'`)
+            let response = await client.put(`/item/${entry.id}/archive`)
+            if( !response || response.status != 200 ) {
+              console.log(`Data Toolbox | Unexpected response for '${entry.name}'`, response)
+              ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
             }
           }
           window.render()
@@ -813,14 +919,13 @@ class LetsContributeReview extends FormApplication {
         content: game.i18n.format("tblc.deleteAllContent"),
         yes: async function() {
           ui.notifications.info(game.i18n.localize("tblc.msgProcessing"))
-          for( let d of data) {
-            if(d.id in selected && selected[d.id]) {
-              console.log(`Data Toolbox | Deleting '${d.name}'`)
-              let response = await client.delete(`/item/${d.id}`)
-              if( !response || response.status != 200 ) {
-                console.log(`Data Toolbox | Unexpected response for '${d.name}'`, response)
-                ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
-              }
+          for( let entry of checked ) {
+            if(entry.id == "all") continue; // ignore all
+            console.log(`Data Toolbox | Deleting '${entry.name}'`)
+            let response = await client.delete(`/item/${entry.id}`)
+            if( !response || response.status != 200 ) {
+              console.log(`Data Toolbox | Unexpected response for '${entry.name}'`, response)
+              ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
             }
           }
           window.render()

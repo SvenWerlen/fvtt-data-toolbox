@@ -21,33 +21,13 @@
         <a class="control select" title="{{localize "tblc.select"}}"><i class="far fa-square"></i></a>
       </div>
       
-      <div class="name">
-        <h4>{{localize "tblc.item"}}</h4>
-      </div>
-      
-      <div class="type">
-        <h4>{{localize "tblc.type"}}</h4>
-      </div>
-      
-      <div class="system">
-        <h4>{{localize "tblc.system"}}</h4>
-      </div>
-      
-      <div class="compendium">
-        <h4>{{localize "tblc.compendium"}}</h4>
-      </div>
-
-      <div class="author">
-        <h4>{{localize "tblc.author"}}</h4>
-      </div>
-      
-      <div class="initiative">
-        <h4>{{localize "tblc.initiative"}}</h4>
-      </div>
-      
-      <div class="controls">
-        <h4>{{localize "tblc.actions"}}</h4>
-      </div>
+      <div class="name"><h4>{{localize "tblc.item"}}</h4></div>
+      <div class="type"><h4>{{localize "tblc.type"}}</h4></div>
+      <div class="system"><h4>{{localize "tblc.system"}}</h4></div>
+      <div class="compendium"><h4>{{localize "tblc.compendium"}}</h4></div>
+      <div class="author"><h4>{{localize "tblc.author"}}</h4></div>
+      <div class="initiative"><h4>{{localize "tblc.initiative"}}</h4></div>
+      <div class="controls"><h4>{{localize "tblc.actions"}}</h4></div>
     </li>
     {{#unless entries.length}}
       <em>{{localize "tblc.noEntry"}}</em>
@@ -58,38 +38,12 @@
         <a class="control select" title="{{localize "tblc.select"}}"><i class="far fa-square"></i></a>
       </div>
       
-      <div class="name">
-        {{entry.name}}
-      </div>
-      
-      <div class="type">
-        {{entry.type}}
-      </div>
-      
-      <div class="system">
-        {{entry.system}}
-      </div>
-      
-      <div class="compendium">
-        {{entry.compendium}}
-      </div>
-      
-      <div class="author">
-        {{#if entry.author}}
-          {{entry.author}}
-        {{/if}}
-        {{#unless entry.author}}
-          -
-        {{/unless}}
-      </div>
-      
-      <div class="initiative">
-        {{#if entry.initiative}}
-          {{entry.initiative}}
-        {{/if}}
-        {{#unless entry.initiative}}
-          -
-        {{/unless}}
+      <div class="name">{{entry.name}}</div>
+      <div class="type">{{entry.type}}</div>
+      <div class="system">{{entry.system}}</div>
+      <div class="compendium">{{entry.compendium}}</div>
+      <div class="author">{{#if entry.author}}{{entry.author}}{{/if}} {{#unless entry.author}} - {{/unless}}</div>
+      <div class="initiative">{{#if entry.initiative}}{{entry.initiative}}{{/if}}{{#unless entry.initiative}} - {{/unless}}
       </div>
       
       <div class="controls">
@@ -114,6 +68,11 @@
           <i class="fas fa-thumbs-down"></i>
         </a>
         {{/unless}}
+        {{#unless ../archivedActive}}
+        <a class="control archive" title="{{localize "tblc.actionArchive"}}">
+          <i class="fas fa-archive"></i>
+        </a>
+        {{/unless}}
         <a class="control delete" title="{{localize "tblc.actionDelete"}}">
           <i class="fas fa-trash"></i>
         </a>
@@ -126,12 +85,24 @@
     <button class="dialog-button import" data-button="import" disabled>
       <i class="fas fa-download"></i>{{localize "tblc.import"}}
     </button>
+    <button class="dialog-button merge" data-button="merge" disabled>
+      <i class="fas fa-atlas"></i>{{localize "tblc.merge"}}
+    </button>
+    {{#unless acceptedActive}}
     <button class="dialog-button accept" data-button="accept" disabled>
       <i class="fas fa-thumbs-up"></i>{{localize "tblc.accept"}}
     </button>
+    {{/unless}}
+    {{#unless rejectedActive}}
     <button class="dialog-button reject" data-button="reject" disabled>
       <i class="fas fa-thumbs-down"></i>{{localize "tblc.reject"}}
     </button>
+    {{/unless}}
+    {{#unless newActive}}{{#unless archivedActive}}
+    <button class="dialog-button archive" data-button="archive" disabled>
+      <i class="fas fa-archive"></i>{{localize "tblc.archive"}}
+    </button>
+    {{/unless}}{{/unless}}
     <button class="dialog-button delete" data-button="delete" disabled>
       <i class="fas fa-trash"></i>{{localize "tblc.delete"}}
     </button>

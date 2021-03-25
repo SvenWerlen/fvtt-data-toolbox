@@ -52,6 +52,7 @@
     "tblc.actionReject": "Mark it as 'rejected'",
     "tblc.actionCompare": "Compare the submited item with the original from compendium",
     "tblc.actionImport": "Import the submited item for testing",
+    "tblc.actionArchive": "Archive the item",
     "tblc.actionDelete": "Delete the item",
     "tblc.actionMerge": "Merge into the compendium",
     
@@ -59,15 +60,18 @@
     "tblc.msgSubmitSuccess": "{entryName} has been successfully sent!",
     "tblc.msgSubmitError": "{entryName} couldn't be sent ({code})!",
     "tblc.msgImportSuccess": "{entryName} has been successfully imported!",
-    "tblc.msgMergeSuccess": "{entryName} has been successfully merged!",
+    "tblc.msgMergeSuccess": "{entryName} has been successfully inserted into compendium!",
+    "tblc.msgUpdateSuccess": "{entryName} has been successfully updated in compendium!",
     "tblc.msgInitiativesError": "Couldn't retrieve initiatives ({code})!",
     "tblc.msgPreparingReviewUI": "Preparing the review UI ... please wait!!",
     "tblc.msgProcessing": "Processing the selected entries... please wait!!",
     
     "tblc.acceptTitle": "Accept contribution",
-    "tblc.acceptContent": "Are you sure you want to mark <i>{name}</i> as <b>accepted</b>? The entry will disappear from the list.",
+    "tblc.acceptContent": "Are you sure you want to mark <i>{name}</i> as <b>accepted</b>?",
     "tblc.rejectTitle": "Reject contribution",
-    "tblc.rejectContent": "Are you sure you want to mark <i>{name}</i> as <b>rejected</b>? The entry will disappear from the list.",
+    "tblc.rejectContent": "Are you sure you want to mark <i>{name}</i> as <b>rejected</b>?",
+    "tblc.archiveTitle": "Archive contribution",
+    "tblc.archiveContent": "Are you sure you want to archive <i>{name}</i>?",
     "tblc.deleteTitle": "Delete contribution",
     "tblc.deleteContent": "Are you sure you want to delete <i>{name}</i>? Data will be lost!",
     
@@ -91,6 +95,7 @@
     "ERROR.tlbcConfigurationMissing": "You need to configure Let's contribute authentication details (module configuration).",
     "ERROR.tlbcServerUnreachable": "Server unreachable",
     "ERROR.tlbcUnexpectedResponse": "Unexpected response from server (see F12)!",
+    "ERROR.tlbcNoCompendiumChosen": "You must target a valid compendium for new entries!",
         
     "tblc.compareTitle": "Compare contribution with source from compendium",
     "tblc.compareInfo": "Compare the changes between the submitted entry (left) and the source from the compendium (right).",
@@ -98,18 +103,26 @@
     "tblc.actionOnSelected": "Batch actions on selected : ",
     "tblc.select": "Click to select/unselect",
     "tblc.import": "Import",
+    "tblc.merge": "Merge",
     "tblc.accept": "Accept",
     "tblc.reject": "Reject",
+    "tblc.archive": "Archive",
     "tblc.delete": "Delete",
     
     "tblc.importAllTitle": "Import selected",
     "tblc.importAllContent": "Are you sure you want to import all selected entries ?",
     
+    "tblc.mergeAllTitle": "Merge selected into compendium",
+    "tblc.mergeAllContent": "Are you sure you want to merge all selected entries into the compendiums? Existing entries (same name) will be updated. New entries inserted.",
+    
     "tblc.acceptAllTitle": "Accept selected",
-    "tblc.acceptAllContent": "Are you sure you want to mark all selected as <b>accepted</b>? The entries will disappear from the list.",
+    "tblc.acceptAllContent": "Are you sure you want to mark all selected as <b>accepted</b>?",
     
     "tblc.rejectAllTitle": "Reject selected",
-    "tblc.rejectAllContent": "Are you sure you want to mark all selected as <b>rejected</b>? The entries will disappear from the list.",
+    "tblc.rejectAllContent": "Are you sure you want to mark all selected as <b>rejected</b>?",
+    
+    "tblc.archiveAllTitle": "Archive selected",
+    "tblc.archiveAllContent": "Are you sure you want to archive all selected entries?",
     
     "tblc.deleteAllTitle": "Delete selected",
     "tblc.deleteAllContent": "Are you sure you want to delete all selected? Data will be lost!",
