@@ -102,7 +102,7 @@ class LetsContribute {
       
       // retrieve pack entry matching name (there is not referenced ID?)
       ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
-      let match = await LetsContribute.getSearchEntryFromName(entity.name, this.type)
+      let match = await LetsContribute.getSearchEntryFromIdOrName(entity._id, entity.name, this.type)
       
       new LetsContributeSubmit({ entity: entity, compendium: match ? match.compendium : null, system: game.system }).render(true);
 
@@ -113,24 +113,30 @@ class LetsContribute {
    * Returns the entity matching the given name by searching in all compendiums
    * @return { entity, compendium } or null if not found
    */
-  static async getSearchEntryFromName(entityName, entity) {
+  static async getSearchEntryFromIdOrName(entityId, entityName, entity) {
     let packs = game.packs.entries
     let match = null
     let compendium = null
+    // search by ID
     for(let p=0; p<packs.length; p++) {
       if(packs[p].entity !== entity) continue;
       const index = await packs[p].getIndex()
-      match = await index.find(e => e.name === entityName)
+      match = await index.find(e => e._id === entityId)
       if(match) {
-        compendium = packs[p]
-        break;
+        return { entity: match, compendium: packs[p] }
       }
     }
-    if( match ) {
-      return { entity: match, compendium: compendium }
-    } else {
-      return null;
+    // fall back (search by name)
+    for(let p=0; p<packs.length; p++) {
+      if(packs[p].entity !== entity) continue;
+      const index = await packs[p].getIndex()
+      match = await index.find(e => e._id === entityId)
+      match = await index.find(e => e.name === entityName)
+      if(match) {
+        return { entity: match, compendium: packs[p] }
+      }
     }
+    return null;
   };
   
   /**
@@ -149,22 +155,6 @@ class LetsContribute {
     SceneNavigation._onLoadProgress(game.i18n.localize("tblc.loading"), 100);
     return indexes;
   }
-
-  /**
-   * Returns the entity matching the given name by searching in the specified compendium
-   * @return { entity, compendium } or null if not found
-   */
-  static async getSearchEntryFromNameAndCompendium(entityName, compendiumName) {
-    let compendium = game.packs.get(compendiumName);
-    const index = await compendium.getIndex();
-    let entityToEdit = await index.find(e => e.name == entityName);
-
-    if(entityToEdit) {
-      return { entity: entityToEdit, compendium: compendium };
-    } else {
-      return null;
-    }
-  };
   
   /**
    * Returns the new merged entry (duplicate)
@@ -174,7 +164,12 @@ class LetsContribute {
     if( response.status != 200 ) return null;
     
     let data = response.data
-    let match = cache[data.compendium] ? cache[data.compendium].find( el => el.name == data.data.name ) : null
+    // search by _id (first)
+    let match = cache[data.compendium] ? cache[data.compendium].find( el => el._id == data.data._id ) : null
+    // search by name (fallback)
+    if( !match ) {
+      match = cache[data.compendium] ? cache[data.compendium].find( el => el.name == data.data.name ) : null
+    }
     
     // no match => return entry "as is"
     if( !match ) {
@@ -624,7 +619,6 @@ class LetsContributeReview extends FormApplication {
     else if (a.classList.contains("merge")) {
       let response = await client.get(`/item/${entryId}`)
       if( response.status == 200 ) {
-        let objectToCreate = null
         // prepare data to import
         ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
         let data = response.data
@@ -645,11 +639,11 @@ class LetsContributeReview extends FormApplication {
             await pack.importEntity(item)
             // delete temporary item
             await item.delete()
-            ui.notifications.info(game.i18n.format("tblc.msgMergeSuccess", { entryName: objectToCreate.name}));
+            ui.notifications.info(game.i18n.format("tblc.msgMergeSuccess", { entryName: object.name}));
           } else {
             // update item
             pack.updateEntity(object)
-            ui.notifications.info(game.i18n.format("tblc.msgUpdateSuccess", { entryName: objectToCreate.name}));
+            ui.notifications.info(game.i18n.format("tblc.msgUpdateSuccess", { entryName: object.name}));
           }
           
           // relock compendium (if it was)
