@@ -77,7 +77,7 @@ class LetsContribute {
   handle(app, html, data) {
 
     // only actors of type npc (bestiary) supported
-    if( app.entity.entity == "Actor" && app.entity.data.type != "npc" ) { return; }
+    //if( app.entity.entity == "Actor" && app.entity.data.type != "npc" ) { return; }
     // if not editable, it means that it wasn't modified (compendium)
     if( !app.isEditable ) { return; }
     // special case for JournalEntry
@@ -206,14 +206,22 @@ class LetsContribute {
     return objectToCreate
   }
   
-  /**
-   * Returns the entity based on the give type
-   */
-  static getEntityFromType(type) {
-    switch(type) {
-      case "npc": return "Actor"
-      case "journal": return "JournalEntry"
-      default: return "Item"
+  static async createEntity(objectToCreate, navigate = false) {
+    if(Object.keys(CONFIG.Item.sheetClasses).includes(objectToCreate.type)) {
+      if(navigate) ui.sidebar.activateTab("items")
+      return await Item.create(objectToCreate)
+    }
+    else if(objectToCreate.type == "journal") {
+      if(navigate) ui.sidebar.activateTab("journal")
+      return await JournalEntry.create(objectToCreate)
+    }
+    else if(Object.keys(CONFIG.Actor.sheetClasses).includes(objectToCreate.type)) {
+      if(navigate) ui.sidebar.activateTab("actors")
+      return await Actor.create(objectToCreate)
+    }
+    else {
+      ui.notifications.error(game.i18n.format("tblc.msgTypeNotSupported", { type: objectToCreate.type}));
+      return null;
     }
   }
   
@@ -608,9 +616,11 @@ class LetsContributeReview extends FormApplication {
     else if (a.classList.contains("import")) {
       let objectToCreate = await LetsContribute.getMergedEntry(client, this.cache, entryId, initiativeId)
       if( objectToCreate ) {
-        ui.sidebar.activateTab("items");
-        await Item.create(objectToCreate)
-        ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: objectToCreate.name}));
+        // create new item
+        let object = await LetsContribute.createEntity(objectToCreate, true)
+        if(object) {
+          ui.notifications.info(game.i18n.format("tblc.msgImportSuccess", { entryName: objectToCreate.name}));
+        }
       } else {
         console.log("Data Toolbox | Unexpected response", response)
         ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
@@ -620,7 +630,6 @@ class LetsContributeReview extends FormApplication {
       let response = await client.get(`/item/${entryId}`)
       if( response.status == 200 ) {
         // prepare data to import
-        ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
         let data = response.data
         const pack = game.packs.get(data.compendium);
         if(pack) {
@@ -634,9 +643,10 @@ class LetsContributeReview extends FormApplication {
           let object = await LetsContribute.getMergedEntry(client, this.cache, entryId, initiativeId)
           if(!match) {
             // create new item
-            let item = await Item.create(object)
+            let element = await LetsContribute.createEntity(object)
+            if(!element) return
             // import into compendium
-            await pack.importEntity(item)
+            await pack.importEntity(element)
             // delete temporary item
             await item.delete()
             ui.notifications.info(game.i18n.format("tblc.msgMergeSuccess", { entryName: object.name}));
@@ -785,7 +795,7 @@ class LetsContributeReview extends FormApplication {
                 objectToCreate = duplicate( response.data.data );
                 if( objectToCreate._id ) { delete objectToCreate._id; }
               }
-              await Item.create(objectToCreate)
+              await LetsContribute.createEntity(objectToCreate, true)
             } else {
               console.log(`Data Toolbox | Unexpected response for '${entry.name}'`, response)
                 ui.notifications.error(game.i18n.localize("tblc.tlbcUnexpectedResponse"))
@@ -819,7 +829,8 @@ class LetsContributeReview extends FormApplication {
                 let object = await LetsContribute.getMergedEntry(client, window.cache, entry.id, initiativeId)
                 if(!match) {
                   // create new item
-                  let item = await Item.create(object)
+                  let item = await LetsContribute.createEntity(object, true)
+                  if(!item) return;
                   // import into compendium
                   await pack.importEntity(item)
                   // delete temporary item

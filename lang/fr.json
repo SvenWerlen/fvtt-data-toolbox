@@ -65,6 +65,7 @@
     "tblc.msgInitiativesError": "Initiatives n'ont pas pu être récupérées ({code})!",
     "tblc.msgPreparingReviewUI": "Préparation de l'interface de révision... veuillez patienter!!",
     "tblc.msgProcessing": "Traitement des contributions sélectionnées... veuillez patienter!!",
+    "tblc.msgTypeNotSupported": "Let's contribute ne supporte pas encore le type '{type}'!",
     
     "tblc.acceptTitle": "Accepter la contribution",
     "tblc.acceptContent": "Êtes-vous sûr(e) de vouloir marquer <i>{name}</i> comme <b>accepté</b>?",

@@ -65,6 +65,7 @@
     "tblc.msgInitiativesError": "Couldn't retrieve initiatives ({code})!",
     "tblc.msgPreparingReviewUI": "Preparing the review UI ... please wait!!",
     "tblc.msgProcessing": "Processing the selected entries... please wait!!",
+    "tblc.msgTypeNotSupported": "Let's contribute doesn't support type '{type}' yet!",
     
     "tblc.acceptTitle": "Accept contribution",
     "tblc.acceptContent": "Are you sure you want to mark <i>{name}</i> as <b>accepted</b>?",
