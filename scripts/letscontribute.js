@@ -59,6 +59,12 @@ class LetsContributeClient {
     
 }
 
+/**
+ * Register contribute on actors, items and journals
+ */
+Hooks.on('getActorSheetHeaderButtons', (app, actions) => LetsContribute.hook(app, actions))
+Hooks.on('getJournalSheetHeaderButtons', (app, actions) => LetsContribute.hook(app, actions))
+Hooks.on('getItemSheetHeaderButtons', (app, actions) => LetsContribute.hook(app, actions))
 
 /**
  * Add an icon on each item...
@@ -68,45 +74,26 @@ class LetsContribute {
   static lastSelectedInitiative = 0
   static lastAuthor = ""
   
-  constructor(hook, type, query) {
-    Hooks.on(hook, this.handle.bind(this));
-    this.type = type;
-  }
-
-  
-  handle(app, html, data) {
-
-    // only actors of type npc (bestiary) supported
-    //if( app.entity.entity == "Actor" && app.entity.data.type != "npc" ) { return; }
-    // if not editable, it means that it wasn't modified (compendium)
+  static hook(app, actions) {
     if( !app.isEditable ) { return; }
-    // special case for JournalEntry
     if( app.entity.entity == "JournalEntry" ) {
       app.entity.data.type = "journal"
     }
-    
-    const handle = $(
-        `<div class="window-upload-handle">
-            <i class="fas fa-upload"></i>
-        </div>`
-    );
+    const entityType = app.entity.entity
 
-    const header = html.find(".window-header");
-    header.after(handle);
-    
-    const img = handle.find('i')[0];
-    img.addEventListener('click', async evt => {
-      evt.stopPropagation();
-      
-      const entity = app.entity.data
-      
-      // retrieve pack entry matching name (there is not referenced ID?)
-      ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
-      let match = await LetsContribute.getSearchEntryFromIdOrName(entity._id, entity.name, this.type)
-      
-      new LetsContributeSubmit({ entity: entity, compendium: match ? match.compendium : null, system: game.system }).render(true);
-
-    }, false);
+    actions.splice(0, 0, {
+      class: "submit",
+      icon: "fas fa-upload",
+      label: game.i18n.localize("tblc.contribute"),
+      onclick: () => {
+        const entity = app.entity.data
+        // retrieve pack entry matching name (there is not referenced ID?)
+        ui.notifications.info(game.i18n.localize("tblc.msgSearchingInCompendium"))
+        LetsContribute.getSearchEntryFromIdOrName(entity._id, entity.name, entityType).then( match => {
+          new LetsContributeSubmit({ entity: entity, compendium: match ? match.compendium : null, system: game.system }).render(true)
+        });
+      }
+    })
   }
   
   /**
@@ -130,7 +117,6 @@ class LetsContribute {
     for(let p=0; p<packs.length; p++) {
       if(packs[p].entity !== entity) continue;
       const index = await packs[p].getIndex()
-      match = await index.find(e => e._id === entityId)
       match = await index.find(e => e.name === entityName)
       if(match) {
         return { entity: match, compendium: packs[p] }

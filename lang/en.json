@@ -55,6 +55,7 @@
     "tblc.actionArchive": "Archive the item",
     "tblc.actionDelete": "Delete the item",
     "tblc.actionMerge": "Merge into the compendium",
+    "tblc.contribute": "Contribute",
     
     "tblc.msgSearchingInCompendium": "Searching item match in compendium... please wait!!",
     "tblc.msgSubmitSuccess": "{entryName} has been successfully sent!",
