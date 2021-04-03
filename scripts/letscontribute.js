@@ -634,7 +634,7 @@ class LetsContributeReview extends FormApplication {
             // import into compendium
             await pack.importEntity(element)
             // delete temporary item
-            await item.delete()
+            await element.delete()
             ui.notifications.info(game.i18n.format("tblc.msgMergeSuccess", { entryName: object.name}));
           } else {
             // update item
