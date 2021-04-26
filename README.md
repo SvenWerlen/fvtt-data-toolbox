@@ -5,7 +5,7 @@ This module provides tools for generating and maintaining compendiums.
 * [Generate a compendium from a CSV import](doc/csv-importer.md)
 * [Improve the compendiums of your community with Lets'Contribute](doc/letscontribute/)
 
-### Install module
+## Install module
 
 To install the module, simply install *Data Toolbox* from the offical list of Foundry VTT modules
 
