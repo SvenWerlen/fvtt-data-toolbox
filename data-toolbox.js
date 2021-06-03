@@ -135,7 +135,7 @@ class GenerateCompendiumDialog extends Dialog {
       }
       
       // create new compendium
-      await Compendium.create({label: compendiumName, entity: entity})
+      await CompendiumCollection.createCompendium({label: compendiumName, entity: entity})
       const pack = await game.packs.find(p => p.metadata.label === compendiumName);
       if (!pack) { return; }
       
