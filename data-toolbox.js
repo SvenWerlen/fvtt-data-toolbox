@@ -24,6 +24,8 @@ class GenerateCompendiumDialog extends Dialog {
         },
       },
       default: "generate",
+      closeOnSubmit: false,
+      submitOnClose: false,
       close: (dialog) => { console.log(dialog); }
     });
   }
@@ -174,7 +176,7 @@ class GenerateCompendiumDialog extends Dialog {
           //console.log(jsonData)
           let newData = JSON.parse(jsonData)
           //console.log(newData)
-          let entity = await pack.createEntity(newData);
+          let entity = await pack.documentClass.create(newData, { pack: pack.collection });
           entity.update({}); // force update to auto-calculate other data (e.g. totals)
         }
         ui.notifications.info(game.i18n.format("tb.processCompleted", {count: totalCount, type: entity}));
