@@ -132,7 +132,6 @@ class GenerateCompendiumDialog extends Dialog {
       // delete compendium if exists
       const compendiumFilename = compendiumName.slugify({strict: true})
       let compendium = game.packs.get("world." + compendiumFilename);
-      console.log(compendium)
       if (compendium) {
         await compendium.deleteCompendium()
       }

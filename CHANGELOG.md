@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2022-01-16
+### Changed
+- Data Toolbox - Support for V9
+- Let's Contribute - Removed because not supported any more
+
 ## [2.0.0] - 2021-06-27
 ### Changed
 - Data Toolbox - Support for 0.8.x

@@ -6,7 +6,7 @@
   "authors": [],
   "url": "https://github.com/SvenWerlen/fvtt-data-toolbox",
   "flags": {},
-  "version": "2.0.0",
+  "version": "2.1.0",
   "minimumCoreVersion": "9",
   "compatibleCoreVersion": "9",
   "scripts": [
@@ -44,7 +44,7 @@
   "dependencies": [],
   "socket": false,
   "manifest": "https://raw.githubusercontent.com/SvenWerlen/fvtt-data-toolbox/master/module.json",
-  "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/archive/v-2.0.0.zip",
+  "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/archive/v-2.1.0.zip",
   "protected": false,
   "coreTranslation": false,
   "library": false
