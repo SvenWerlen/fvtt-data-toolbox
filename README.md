@@ -3,7 +3,6 @@
 This module provides tools for generating and maintaining compendiums.
 
 * [Generate a compendium from a CSV import](doc/csv-importer.md)
-* [Improve the compendiums of your community with Lets'Contribute](doc/letscontribute/)
 
 ## Install module
 

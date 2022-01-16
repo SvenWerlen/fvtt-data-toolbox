@@ -26,7 +26,7 @@ class GenerateCompendiumDialog extends Dialog {
       default: "generate",
       closeOnSubmit: false,
       submitOnClose: false,
-      close: (dialog) => { console.log(dialog); }
+      close: (dialog) => { }
     });
   }
   
@@ -132,12 +132,13 @@ class GenerateCompendiumDialog extends Dialog {
       // delete compendium if exists
       const compendiumFilename = compendiumName.slugify({strict: true})
       let compendium = game.packs.get("world." + compendiumFilename);
+      console.log(compendium)
       if (compendium) {
-        await compendium.delete()
+        await compendium.deleteCompendium()
       }
       
       // create new compendium
-      await CompendiumCollection.createCompendium({label: compendiumName, entity: entity})
+      await CompendiumCollection.createCompendium({label: compendiumName, type: entity})
       const pack = await game.packs.find(p => p.metadata.label === compendiumName);
       if (!pack) { return; }
       
@@ -209,23 +210,6 @@ Hooks.once("init", () => {
   game.settings.register("data-toolbox", "template", { scope: "world", config: false, type: String, default: "modules/data-toolbox/samples/creature-template.json" });
   game.settings.register("data-toolbox", "entity", { scope: "world", config: false, type: String, default: "Actor" });
   game.settings.register("data-toolbox", "compendium", { scope: "world", config: false, type: String, default: "" });
-  
-  game.settings.register("data-toolbox", "lcLogin", {
-    name: game.i18n.localize("SETTINGS.tblcLogin"), 
-    hint: game.i18n.localize("SETTINGS.tblcLoginHint"), 
-    scope: "world",
-    config: true,
-    default: "",
-    type: String});
-  
-  game.settings.register("data-toolbox", "lcAccessKey", {
-    name: game.i18n.localize("SETTINGS.tblcAccessKey"), 
-    hint: game.i18n.localize("SETTINGS.tblcAccessKeyHint"), 
-    scope: "world",
-    config: true,
-    default: "",
-    type: String});
-
 });
 
 
