@@ -1,20 +1,13 @@
 {
-  "name": "data-toolbox",
   "title": "Data Toolbox for FoundryVTT",
   "description": "Tools for generating/manipulating data (compendiums). For example, it can be used for generating a compendium from a CSV file.",
-  "author": "Sven Werlen",
-  "authors": [],
   "url": "https://github.com/SvenWerlen/fvtt-data-toolbox",
-  "flags": {},
-  "version": "2.1.1",
-  "minimumCoreVersion": "9",
-  "compatibleCoreVersion": "9",
+  "version": "2.3.0",
   "scripts": [
     "data-toolbox.js",
     "scripts/d3/d3.min.js",
     "scripts/d3-fetch/d3-fetch.min.js"
   ],
-  "esmodules": [],
   "styles": [
     "data-toolbox.css"
   ],
@@ -22,30 +15,31 @@
     {
       "lang": "en",
       "name": "English",
-      "path": "lang/en.json"
+      "path": "lang/en.json",
+      "flags": {}
     },
     {
       "lang": "fr",
       "name": "French",
-      "path": "lang/fr.json"
+      "path": "lang/fr.json",
+      "flags": {}
     }
   ],
   "packs": [
     {
       "name": "data-macros",
       "label": "Data Macros",
-      "path": "./packs/data-macros.db",
-      "entity": "Macro",
+      "path": "packs/data-macros.db",
       "private": false,
-      "type": "Macro"
+      "type": "Macro",
+      "flags": {}
     }
   ],
-  "system": [],
-  "dependencies": [],
-  "socket": false,
   "manifest": "https://raw.githubusercontent.com/SvenWerlen/fvtt-data-toolbox/master/module.json",
   "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/archive/v-2.1.1.zip",
-  "protected": false,
-  "coreTranslation": false,
-  "library": false
+  "id": "data-toolbox",
+  "compatibility": {
+    "minimum": "9",
+    "verified": "10"
+  }
 }
