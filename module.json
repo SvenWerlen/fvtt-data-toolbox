@@ -36,7 +36,7 @@
     }
   ],
   "manifest": "https://raw.githubusercontent.com/SvenWerlen/fvtt-data-toolbox/master/module.json",
-  "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/archive/v-2.1.1.zip",
+  "download": "https://github.com/SvenWerlen/fvtt-data-toolbox/archive/v-2.3.0.zip",
   "id": "data-toolbox",
   "compatibility": {
     "minimum": "9",
