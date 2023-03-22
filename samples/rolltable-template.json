@@ -1,0 +1,66 @@
+{
+  "name": "{{Name}}",
+  "img": "icons/svg/d20-grey.svg",
+  "description": "{{Description}}",
+  "results": [
+    {
+      "type": 0,
+      "weight": 1,
+      "range": [
+        {{Range1min}},
+        {{Range1max}}
+      ],
+      "drawn": false,
+      "documentCollection": "",
+      "text": "{{Text1}}",
+      "img": "icons/svg/d20-black.svg",
+      "documentId": null,
+      "flags": {}
+    },
+    {
+      "type": 0,
+      "weight": 1,
+      "range": [
+        {{Range2min}},
+        {{Range2max}}
+      ],
+      "drawn": false,
+      "documentCollection": "",
+      "text": "{{Text2}}",
+      "img": "icons/svg/d20-black.svg",
+      "documentId": null,
+      "flags": {}
+    },
+    {
+      "type": 0,
+      "weight": 1,
+      "range": [
+        {{Range3min}},
+        {{Range3max}}
+      ],
+      "drawn": false,
+      "documentCollection": "",
+      "text": "{{Text3}}",
+      "img": "icons/svg/d20-black.svg",
+      "documentId": null,
+      "flags": {}
+    },
+    {
+      "type": 0,
+      "weight": 1,
+      "range": [
+        {{Range4min}},
+        {{Range4max}}
+      ],
+      "drawn": false,
+      "documentCollection": "",
+      "text": "{{Text4}}",
+      "img": "icons/svg/d20-black.svg",
+      "documentId": null,
+      "flags": {}
+    }
+  ],
+  "formula": "d20",
+  "replacement": true,
+  "displayRoll": true
+}

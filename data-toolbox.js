@@ -2,17 +2,18 @@
  * Adapted for PF1 system from original module: https://github.com/jopeek/fvtt-loot-sheet-npc-5e
  */ 
 
-class GenerateCompendiumDialog extends Dialog {
+class GenerateCompendiumDialog extends FormApplication {
   
-  constructor(callback, options) {
-    if (typeof(options) !== "object") {
-      options = {};
-    }
-    
-    let applyChanges = false;
-    super({
+  constructor() {
+    super()
+  }
+
+  static get defaultOptions() {
+    return mergeObject(super.defaultOptions, {
+      id: "Data Toolbox",
+      classes: ["datatoolbox"],
       title: game.i18n.localize("tb.generateCompendiumTitle"),
-      content: options.html,
+      template: "modules/data-toolbox/templates/dialog-toolbox.html",
       buttons: {
         generate: {
           label: game.i18n.localize("tb.generate"),
@@ -23,11 +24,26 @@ class GenerateCompendiumDialog extends Dialog {
           label: game.i18n.localize("tb.cancel")
         },
       },
+      width: 450,
+      height: "auto",
+      resizable: true,
       default: "generate",
       closeOnSubmit: false,
       submitOnClose: false,
       close: (dialog) => { }
     });
+  }
+
+  getData() {
+    return {
+      source: game.settings.get("data-toolbox", "source"), 
+      template: game.settings.get("data-toolbox", "template"),
+      itemSelected: game.settings.get("data-toolbox", "entity") === "Item" ? "selected" : "",
+      actorSelected: game.settings.get("data-toolbox", "entity") === "Actor" ? "selected" : "",
+      journalSelected: game.settings.get("data-toolbox", "entity") === "JournalEntry" ? "selected" : "",
+      rolltableSelected: game.settings.get("data-toolbox", "entity") === "RollTable" ? "selected" : "",
+      compendium: game.settings.get("data-toolbox", "compendium")
+    }
   }
   
   activateListeners(html) {
@@ -35,6 +51,12 @@ class GenerateCompendiumDialog extends Dialog {
     
     // Detect and activate file-picker buttons
     html.find('button.file-picker').each((i, button) => this._activateFilePicker(button));
+
+    // Generate
+    html.find('button.generate').click(() => this._generate(html))
+
+    // Cancel
+    html.find('button.cancel').click(() => this.close())
   }
   
   _activateFilePicker(button) {
@@ -44,23 +66,13 @@ class GenerateCompendiumDialog extends Dialog {
     }
   }
   
-  _submit(button, html) {
-    try {
-      if (button.callback) button.callback(html);
-      if (!button.dontclose) this.close();
-    } catch(err) {
-      ui.notifications.error(err);
-      throw new Error(err);
-    }
-  }
-  
   async _generate(html) {
     let source = html.find('input[name="source"]').val();
     let template = html.find('input[name="template"]').val();
     let entity = html.find('select[name="entity"]').val();
     let compendiumName = html.find('input[name="compendium"]').val();
     
-    if (entity != "Actor" && entity != "Item" && entity != "JournalEntry") {
+    if (entity != "Actor" && entity != "Item" && entity != "JournalEntry" && entity != "RollTable") {
       ui.notifications.error(game.i18n.localize("ERROR.tbInvalidEntity"));
       return;
     }
@@ -137,7 +149,7 @@ class GenerateCompendiumDialog extends Dialog {
       }
       
       // create new compendium
-      await CompendiumCollection.createCompendium({label: compendiumName, type: entity})
+      compendium = await CompendiumCollection.createCompendium({label: compendiumName, type: entity})
       const pack = await game.packs.find(p => p.metadata.label === compendiumName);
       if (!pack) { return; }
       
@@ -180,13 +192,14 @@ class GenerateCompendiumDialog extends Dialog {
           entity.update({}); // force update to auto-calculate other data (e.g. totals)
         }
         ui.notifications.info(game.i18n.format("tb.processCompleted", {count: totalCount, type: entity}));
+
+        // open generated compendium
+        compendium.render(true)
       } catch(err) {
         ui.notifications.error(game.i18n.localize("ERROR.tbGenerationError"));
         console.log("Data Toolbox | JSON: " + jsonData);
         throw new Error(err);
       }
-      
-      //game.settings.set("data-toolbox", "template", template);
     }
   }
   
@@ -214,14 +227,5 @@ Hooks.once("init", () => {
 
 function dtShowToolbox() {
   console.log("Data Toolbox | Show");
-  
-  renderTemplate("modules/data-toolbox/templates/dialog-toolbox.html", { 
-      source: game.settings.get("data-toolbox", "source"), 
-      template: game.settings.get("data-toolbox", "template"),
-      itemSelected: game.settings.get("data-toolbox", "entity") === "Item" ? "selected" : "",
-      actorSelected: game.settings.get("data-toolbox", "entity") === "Actor" ? "selected" : "",
-      journalSelected: game.settings.get("data-toolbox", "entity") === "JournalEntry" ? "selected" : "",
-      compendium: game.settings.get("data-toolbox", "compendium")
-    }).then(html => { (new GenerateCompendiumDialog(null, {html: html})).render(true); }
-  );
+  new GenerateCompendiumDialog().render(true);
 }

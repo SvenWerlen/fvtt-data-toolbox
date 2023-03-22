@@ -1,0 +1,3 @@
+Name,Description,Range1min,Range1max,Text1,Range2min,Range2max,Text2,Range3min,Range3max,Text3,Range4min,Range4max,Text4
+Table Sample #1,Rolltable (test #1 for DataToolbox),1,10,Result #1 (1-10),11,12,Result #2 (11-12),13,18,Result #3 (13-18),19,20,Result #4 (19-20)
+Table Sample #2,Rolltable (test #2 for DataToolbox),1,2,Result #1 (1-2),3,10,Result #2 (3-10),11,19,Result #3 (11-19),20,20,Result #4 (20)

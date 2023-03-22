@@ -17,6 +17,7 @@
     "tb.actor": "Actor",
     "tb.item": "Item",
     "tb.journal": "Article",
+    "tb.rolltable": "Table",
     "tb.compendiumName": "Nom du compendium",
     
     "tb.processStarted": "Processus démarré. Veuillez attendre... peut prendre plusieurs minutes!!",

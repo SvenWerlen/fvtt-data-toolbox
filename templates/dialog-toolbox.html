@@ -28,6 +28,7 @@
           <option value="Actor" {{actorSelected}}>{{localize "tb.actor"}}</option>
           <option value="Item" {{itemSelected}}>{{localize "tb.item"}}</option>
           <option value="JournalEntry" {{journalSelected}}>{{localize "tb.journal"}}</option>
+          <option value="RollTable" {{rolltableSelected}}>{{localize "tb.rolltable"}}</option>
       </select>
     </div>
     
@@ -37,5 +38,13 @@
         <input class="compendium" type="text" name="compendium" placeholder="Toolbox Data" value="{{compendium}}">
       </div>
     </div>
+
+    <hr>
+
+    <div class="form-group">
+      <button type="button" class="generate"><i class="fas fa-cogs"></i> {{localize "tb.generate"}}</button>
+      <button type="button" class="cancel">{{localize "tb.cancel"}}</button>
+    </div>
+
   </div>
 </form>
