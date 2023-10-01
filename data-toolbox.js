@@ -35,14 +35,18 @@ class GenerateCompendiumDialog extends FormApplication {
   }
 
   getData() {
+    const types = CONST.COMPENDIUM_DOCUMENT_TYPES.map(documentName => {
+      return { value: documentName, label: game.i18n.localize(getDocumentClass(documentName).metadata.label) };
+    });
+    game.i18n.sortObjects(types, "label");
+    const folders = game.packs._formatFolderSelectOptions();
+
     return {
       source: game.settings.get("data-toolbox", "source"), 
       template: game.settings.get("data-toolbox", "template"),
-      itemSelected: game.settings.get("data-toolbox", "entity") === "Item" ? "selected" : "",
-      actorSelected: game.settings.get("data-toolbox", "entity") === "Actor" ? "selected" : "",
-      journalSelected: game.settings.get("data-toolbox", "entity") === "JournalEntry" ? "selected" : "",
-      rolltableSelected: game.settings.get("data-toolbox", "entity") === "RollTable" ? "selected" : "",
-      compendium: game.settings.get("data-toolbox", "compendium")
+      entitySelected: game.settings.get("data-toolbox", "entity"),
+      compendium: game.settings.get("data-toolbox", "compendium"),
+      types, folders, hasFolders: folders.length >= 1
     }
   }
   
@@ -71,11 +75,6 @@ class GenerateCompendiumDialog extends FormApplication {
     let template = html.find('input[name="template"]').val();
     let entity = html.find('select[name="entity"]').val();
     let compendiumName = html.find('input[name="compendium"]').val();
-    
-    if (entity != "Actor" && entity != "Item" && entity != "JournalEntry" && entity != "RollTable") {
-      ui.notifications.error(game.i18n.localize("ERROR.tbInvalidEntity"));
-      return;
-    }
 
     if (source.length == 0) {
       ui.notifications.error(game.i18n.localize("ERROR.tbNoSource"));
