@@ -21,16 +21,27 @@
         <input class="json" type="text" name="template" placeholder="path/template.json" value="{{template}}">
       </div>
     </div>
-        
+
     <div class="form-group">
-      <label>{{localize "tb.entityType"}}</label>
-      <select name="entity">
-          <option value="Actor" {{actorSelected}}>{{localize "tb.actor"}}</option>
-          <option value="Item" {{itemSelected}}>{{localize "tb.item"}}</option>
-          <option value="JournalEntry" {{journalSelected}}>{{localize "tb.journal"}}</option>
-          <option value="RollTable" {{rolltableSelected}}>{{localize "tb.rolltable"}}</option>
-      </select>
+        <label>{{localize "COMPENDIUM.Type"}}</label>
+        <div class="form-fields">
+            <select name="entity">
+                {{selectOptions types nameAttr="value" selected=entitySelected labelAttr="label"}}
+            </select>
+        </div>
+        <p class="notes">{{localize "COMPENDIUM.TypeHint"}}</p>
     </div>
+
+    {{#if hasFolders}}
+    <div class="form-group">
+        <label>{{ localize "DOCUMENT.Folder" }}</label>
+        <div class="form-fields">
+            <select name="folder">
+                {{selectOptions folders nameAttr="id" labelAttr="name" blank=""}}
+            </select>
+        </div>
+    </div>
+    {{/if}}
     
     <div class="form-group">
       <label>{{localize "tb.compendiumName"}}</label>
