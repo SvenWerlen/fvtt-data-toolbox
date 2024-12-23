@@ -5,7 +5,7 @@ This part of the module provides tools for generating compendium based on struct
 **Typical use case**: 
  * Import data from https://www.d20pfsrd.com
 
-![Compendiums](img/macro.jpg)
+![Compendiums](img/import-data.jpg)
 
 *The module also includes data samples for testing purposes.* 
 

@@ -73,7 +73,7 @@ which contains only a few fields for testing.
 {
   "name": "myactor",
   "type": "character",
-  "data": {
+  "system": {
     "abilities": {
       "str": {
         "total": 10,
@@ -97,7 +97,7 @@ which contains only a few fields for testing.
 {
   "name": "myactor",
   "type": "character",
-  "data": {
+  "system": {
     "abilities": {
       "str": {
         "value": 10
@@ -113,7 +113,7 @@ which contains only a few fields for testing.
 {
   "name": "{{Name}}",
   "type": "character",
-  "data": {
+  "system": {
     "abilities": {
       "str": {
         "value": {{Str}}
