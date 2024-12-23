@@ -19,6 +19,12 @@
     "tb.journal": "JournalArticle",
     "tb.rolltable": "RollTable",
     "tb.compendiumName": "Compendium name",
+
+    "tb.datasample": "Try data sample",
+    "tb.sampleJournal" : "Dataset for generating journal articles",
+    "tb.sampleActor" : "Dataset for generating actors (bestiary sample). Probably specific to D&D 5e",
+    "tb.sampleItem" : "Dataset for generating items. Probably specific to D&D 5e",
+    "tb.sampleRolltable" : "Dataset for generating rolltables",
     
     "tb.processStarted": "Process started. Please wait ... it could take minutes!!",
     "tb.inProcess": "{count}/{total}",

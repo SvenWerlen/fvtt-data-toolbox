@@ -1,5 +1,18 @@
 <form class="toolbox flexcol" autocomplete="off">
   <div class="tab active datatoolbox">
+
+    <div class="form-group">
+      <label>{{localize "tb.datasample"}}</label>
+      <div class="form-fields">              
+        <button type="button" class="dataset" data-id="JournalEntry" title="{{localize "tb.sampleJournal"}}" tabindex="-1"><i class="fa-solid fa-book-open"></i></button>
+        <button type="button" class="dataset" data-id="Actor" title="{{localize "tb.sampleActor"}}" tabindex="-1"><i class="fa-solid fa-user"></i></button>
+        <button type="button" class="dataset" data-id="Item" title="{{localize "tb.sampleItem"}}" tabindex="-1"><i class="fa-solid fa-suitcase"></i></button>
+        <button type="button" class="dataset" data-id="RollTable" title="{{localize "tb.sampleRolltable"}}" tabindex="-1"><i class="fa-solid fa-th-list"></i></button>
+      </div>
+    </div>
+
+    <hr>
+
     <p class="notes">{{localize "tb.toolboxNotes"}}</p>
 
     <div class="form-group">

@@ -46,6 +46,7 @@ class GenerateCompendiumDialog extends FormApplication {
       template: game.settings.get("data-toolbox", "template"),
       entitySelected: game.settings.get("data-toolbox", "entity"),
       compendium: game.settings.get("data-toolbox", "compendium"),
+      folder: game.settings.get("data-toolbox", "folder"),
       types, folders, hasFolders: folders.length >= 1
     }
   }
@@ -54,6 +55,9 @@ class GenerateCompendiumDialog extends FormApplication {
     super.activateListeners(html);
     
     // Detect and activate file-picker buttons
+    html.find('button.dataset').on('click', event => this._chooseDataSet(event));
+
+    // Detect and activate file-picker buttons
     html.find('button.file-picker').each((i, button) => this._activateFilePicker(button));
 
     // Generate
@@ -61,8 +65,34 @@ class GenerateCompendiumDialog extends FormApplication {
 
     // Cancel
     html.find('button.cancel').click(() => this.close())
+
+    const selFolder = game.settings.get("data-toolbox", "folder")
+    if (selFolder) {
+      html.find('select[name="folder"]').val(selFolder)
+    }
+
+    this.html = html
   }
   
+  _chooseDataSet(event) {
+    event.preventDefault();
+    const button = event.currentTarget;
+    const id = $(button).attr("data-id");
+    let data = null
+    switch(id) {
+      case "JournalEntry": data = { template: "article-template.json", csv: "articles-sample.csv" }; break;
+      case "Actor": data = { template: "actor-template.json", csv: "actors-sample.csv" }; break;
+      case "Item": data = { template: "item-template.json", csv: "items-sample.csv" }; break;
+      case "RollTable": data = { template: "rolltable-template.json", csv: "rolltables-sample.csv" }; break;
+    }
+    if (data) {
+      this.html.find('input[name="source"]').val("modules/data-toolbox/samples/" + data.csv);
+      this.html.find('input[name="template"]').val("modules/data-toolbox/samples/" + data.template);
+      this.html.find('select[name="entity"]').val(id);
+      this.html.find('input[name="compendium"]').val(`Data Toolbox Sample (${id})`);
+    }
+  }
+
   _activateFilePicker(button) {
     button.onclick = event => {
       event.preventDefault();
@@ -75,6 +105,7 @@ class GenerateCompendiumDialog extends FormApplication {
     let template = html.find('input[name="template"]').val();
     let entity = html.find('select[name="entity"]').val();
     let compendiumName = html.find('input[name="compendium"]').val();
+    let folder = html.find('select[name="folder"]').val();
 
     if (source.length == 0) {
       ui.notifications.error(game.i18n.localize("ERROR.tbNoSource"));
@@ -87,6 +118,7 @@ class GenerateCompendiumDialog extends FormApplication {
       game.settings.set("data-toolbox", "template", template);
       game.settings.set("data-toolbox", "entity", entity);
       game.settings.set("data-toolbox", "compendium", compendiumName);
+      game.settings.set("data-toolbox", "folder", folder);
       
       if( !compendiumName || compendiumName.length == 0 ) {
         compendiumName = "Toolbox Data"
@@ -148,9 +180,12 @@ class GenerateCompendiumDialog extends FormApplication {
       }
       
       // create new compendium
-      compendium = await CompendiumCollection.createCompendium({label: compendiumName, type: entity})
+      compendium = await CompendiumCollection.createCompendium({label: compendiumName, type: entity});
       const pack = await game.packs.find(p => p.metadata.label === compendiumName);
       if (!pack) { return; }
+      if(folder.length > 0) {
+        await pack.setFolder(folder);
+      }
       
       //console.log(fieldDefault)
       
@@ -187,6 +222,7 @@ class GenerateCompendiumDialog extends FormApplication {
           //console.log(jsonData)
           let newData = JSON.parse(jsonData)
           //console.log(newData)
+          console.log(pack.collection)
           let entity = await pack.documentClass.create(newData, { pack: pack.collection });
           entity.update({}); // force update to auto-calculate other data (e.g. totals)
         }
@@ -217,10 +253,11 @@ Hooks.once("init", () => {
   console.log("Data Toolbox | Init")
   loadTemplates(["modules/data-toolbox/templates/dialog-toolbox.html"]);
   
-  game.settings.register("data-toolbox", "source", { scope: "world", config: false, type: String, default: "modules/data-toolbox/samples/bestiary-sample.csv" });
-  game.settings.register("data-toolbox", "template", { scope: "world", config: false, type: String, default: "modules/data-toolbox/samples/creature-template.json" });
+  game.settings.register("data-toolbox", "source", { scope: "world", config: false, type: String, default: "" });
+  game.settings.register("data-toolbox", "template", { scope: "world", config: false, type: String, default: "" });
   game.settings.register("data-toolbox", "entity", { scope: "world", config: false, type: String, default: "Actor" });
   game.settings.register("data-toolbox", "compendium", { scope: "world", config: false, type: String, default: "" });
+  game.settings.register("data-toolbox", "folder", { scope: "world", config: false, type: String, default: "" });
 });
 
 

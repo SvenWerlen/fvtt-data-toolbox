@@ -20,6 +20,12 @@
     "tb.rolltable": "Table",
     "tb.compendiumName": "Nom du compendium",
     
+    "tb.datasample": "Essayer un échantillon de données",
+    "tb.sampleJournal" : "Ensemble de données pour générer des articles de journal",
+    "tb.sampleActor" : "Ensemble de données pour générer des acteurs (bestiaire). Probablement spécifique à D&D 5e",
+    "tb.sampleItem" : "Ensemble de données pour générer des objets. Probablement spécifique à D&D 5e",
+    "tb.sampleRolltable" : "Ensemble de données pour générer des tables de lancer",
+
     "tb.processStarted": "Processus démarré. Veuillez attendre... peut prendre plusieurs minutes!!",
     "tb.inProcess": "{count}/{total}",
     "tb.processCompleted": "{count} {type}s importés avec succès!"
