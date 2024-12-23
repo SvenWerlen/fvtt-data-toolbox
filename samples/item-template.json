@@ -1,29 +1,29 @@
 {
   "name": "{{title}}",
   "type": "loot",
-  "data": {
+  "img": "icons/svg/mystery-man.svg",
+  "effects": [],
+  "system": {
     "description": {
       "value": "{{description}}",
-      "chat": "",
-      "unidentified": ""
+      "chat": ""
     },
-    "source": "Data toolbox",
+    "source": {
+      "custom": "Data toolbox"
+    },
     "quantity": {{qty}},
-    "weight": {{weight}},
-    "price": {{price}},
-    "attuned": false,
-    "attunement": 0,
+    "weight": {
+      "value": {{weight}},
+      "units": "lb"
+    },
+    "price": {
+      "value": {{price}},
+      "denomination": "gp"
+    },
     "equipped": false,
     "rarity": "{{rarity}}",
-    "identified": true,
-    "attributes": {
-      "spelldc": 10
-    },
-    "damage": {
-      "parts": []
-    }
-  },
-  "sort": 100001,
-  "img": "icons/svg/mystery-man.svg",
-  "effects": []
+    "identified": true
+  }
 }
+
+

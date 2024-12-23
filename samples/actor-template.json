@@ -1,7 +1,7 @@
 {
   "name": "{{Name}}",
   "type": "npc",
-  "data": {
+  "system": {
     "abilities": {
       "str": {
         "value": {{Str}}
